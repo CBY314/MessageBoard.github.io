@@ -30,7 +30,7 @@
 
         .admin-panel{
             background:#fff;padding:20px;border-radius:10px;
-            box-shadow:0 2px 8px #ccc;margin-bottom:20px;display:none;
+            box-shadow:0 2px 8px #ccc;margin-bottom:20px;
         }
         .admin-panel input{padding:8px;margin:5px;border:1px solid #ddd;border-radius:4px;}
         .admin-panel button{padding:8px 12px;background:#67c23a;color:#fff;border:none;border-radius:4px;cursor:pointer;margin:5px;}
@@ -73,6 +73,7 @@
         <div class="wall-wrap" id="wallBox">
             <button class="logout-btn" onclick="logout()">退出登录</button>
 
+            <!-- 管理员面板 默认结构完整保留 -->
             <div class="admin-panel" id="adminPanel">
                 <h3>⚙️ 管理员管理中心</h3>
                 <div class="admin-set">
@@ -109,9 +110,10 @@
         let isAdmin = false;
         let nowLoginUser = "";
 
+        // 页面加载强制重置管理员，保证面板正常
         window.onload = function(){
-            // 强制重置管理员，保证能登录
             localStorage.removeItem("userList");
+            // 初始管理员 CBY / CBY888123
             userList = [{
                 name: "CBY",
                 pwd: "CBY888123",
@@ -129,13 +131,21 @@
             let u = document.getElementById("inpUser").value.trim();
             let p = document.getElementById("inpPwd").value.trim();
 
+            // 直接硬匹配管理员
+            if(u === "CBY" && p === "CBY888123"){
+                isAdmin = true;
+                nowLoginUser = u;
+                goHome();
+                return;
+            }
+
+            // 普通用户
             let find = userList.find(x => x.name === u && x.pwd === p);
             if(!find){
                 alert("账号或密码错误！");
                 return;
             }
-
-            isAdmin = !!find.admin;
+            isAdmin = false;
             nowLoginUser = u;
             goHome();
         }
@@ -144,13 +154,13 @@
             document.getElementById("loginBox").style.display = "none";
             document.getElementById("wallBox").style.display = "block";
             
+            // 管理员才显示面板，普通用户隐藏
             if(isAdmin){
                 document.getElementById("adminPanel").style.display = "block";
                 renderUserList();
-            } else {
+            }else{
                 document.getElementById("adminPanel").style.display = "none";
             }
-            
             renderMsg();
         }
 
