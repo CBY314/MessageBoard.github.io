@@ -23,8 +23,6 @@
             color: #222;
             margin-bottom: 30px;
         }
-
-        /* 登录框样式 */
         .login-box {
             background: #fff;
             padding: 30px;
@@ -52,8 +50,6 @@
             cursor: pointer;
             margin-top: 10px;
         }
-
-        /* 留言区域 */
         .input-box {
             background: #fff;
             padding: 20px;
@@ -87,25 +83,32 @@
             margin-bottom: 15px;
             box-shadow: 0 1px 5px #ddd;
         }
-        /* 默认隐藏留言区 */
         .wall-wrap {
             display: none;
+        }
+        .logout-btn {
+            margin-bottom: 20px;
+            padding: 8px 20px;
+            background: #f56c6c;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>留言墙系统</h1>
+        <h1>留言墙</h1>
 
-        <!-- 登录界面 -->
         <div class="login-box" id="loginBox">
             <input type="text" id="username" placeholder="请输入账号">
             <input type="password" id="pwd" placeholder="请输入密码">
             <button onclick="login()">登录</button>
         </div>
 
-        <!-- 留言墙界面（登录后才显示） -->
         <div class="wall-wrap" id="wallBox">
+            <button class="logout-btn" onclick="logout()">退出登录</button>
             <div class="input-box">
                 <textarea id="content" placeholder="在这里写下你的留言..."></textarea>
                 <button class="send-btn" onclick="addMsg()">提交留言</button>
@@ -115,13 +118,15 @@
     </div>
 
     <script>
-        // ========== 在这里改账号密码 ==========
-        const USER = "admin";   // 账号
-        const PWD  = "123456";  // 密码
+        // ========== 在这里随便添加多个账号 ==========
+        const userList = [
+            {name:"zhangsan", pwd:"123456"},
+            {name:"lisi", pwd:"654321"},
+            {name:"admin", pwd:"888888"}
+        ];
 
         let msgArr = [];
 
-        // 页面打开先判断是否已登录
         window.onload = function(){
             let isLogin = localStorage.getItem("isLogin");
             if(isLogin === "yes"){
@@ -130,13 +135,12 @@
             loadMsg();
         }
 
-        // 登录验证
         function login(){
             let un = document.getElementById("username").value.trim();
             let pd = document.getElementById("pwd").value.trim();
-
-            if(un === USER && pd === PWD){
-                // 标记已登录
+            // 遍历匹配多个账号
+            let ok = userList.some(item => item.name === un && item.pwd === pd);
+            if(ok){
                 localStorage.setItem("isLogin","yes");
                 showWall();
             }else{
@@ -144,13 +148,20 @@
             }
         }
 
-        // 显示留言墙、隐藏登录框
+        function logout(){
+            localStorage.removeItem("isLogin");
+            document.getElementById("wallBox").style.display = "none";
+            document.getElementById("loginBox").style.display = "block";
+            // 清空输入
+            document.getElementById("username").value = "";
+            document.getElementById("pwd").value = "";
+        }
+
         function showWall(){
             document.getElementById("loginBox").style.display = "none";
             document.getElementById("wallBox").style.display = "block";
         }
 
-        // 加载留言
         function loadMsg() {
             let old = localStorage.getItem('liuyanData');
             if(old) {
@@ -159,7 +170,6 @@
             renderMsg();
         }
 
-        // 渲染留言
         function renderMsg() {
             let box = document.getElementById('msgList');
             box.innerHTML = "";
@@ -171,7 +181,6 @@
             }
         }
 
-        // 添加留言
         function addMsg() {
             let text = document.getElementById('content').value.trim();
             if (text === "") {
