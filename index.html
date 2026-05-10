@@ -3,60 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>留言墙</title>
-    <!-- 引入MD5加密库 -->
     <script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.19.0/js/md5.min.js"></script>
     <style>
         * {margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑";}
         body{background:#f0f4f8;padding:30px;}
         .container{max-width:700px;margin:0 auto;}
         h1{text-align:center;margin-bottom:30px;color:#222;}
-
-        .login-box{
-            background:#fff;padding:30px;border-radius:10px;
-            box-shadow:0 2px 8px #ccc;margin:50px auto;max-width:400px;
-        }
-        .login-box input{
-            width:100%;padding:12px;margin:10px 0;
-            border:1px solid #ddd;border-radius:6px;font-size:16px;
-        }
-        .login-box button{
-            width:100%;padding:12px;background:#409eff;
-            color:#fff;border:none;border-radius:6px;cursor:pointer;
-        }
-
+        .login-box{background:#fff;padding:30px;border-radius:10px;box-shadow:0 2px 8px #ccc;margin:50px auto;max-width:400px;}
+        .login-box input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:6px;font-size:16px;}
+        .login-box button{width:100%;padding:12px;background:#409eff;color:#fff;border:none;border-radius:6px;cursor:pointer;}
         .wall-wrap{display:none;}
-        .logout-btn{
-            padding:8px 20px;background:#f56c6c;color:#fff;
-            border:none;border-radius:6px;cursor:pointer;margin-bottom:20px;
-        }
-
-        .admin-panel{
-            background:#fff;padding:20px;border-radius:10px;
-            box-shadow:0 2px 8px #ccc;margin-bottom:20px;display:none;
-        }
+        .logout-btn{padding:8px 20px;background:#f56c6c;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-bottom:20px;}
+        .admin-panel{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px #ccc;margin-bottom:20px;display:none;}
         .admin-panel input{padding:8px;margin:5px;border:1px solid #ddd;border-radius:4px;}
         .admin-panel button{padding:8px 12px;background:#67c23a;color:#fff;border:none;border-radius:4px;cursor:pointer;margin:5px;}
         .admin-del{background:#f56c6c !important;}
         .user-item{padding:10px;background:#f8f9fa;margin:6px 0;border-radius:4px;display:flex;justify-content:space-between;}
         .admin-set{margin-top:15px;padding-top:15px;border-top:1px solid #eee;}
-
-        .input-box{
-            background:#fff;padding:20px;border-radius:10px;
-            box-shadow:0 2px 8px #ccc;margin-bottom:20px;
-        }
-        textarea{
-            width:100%;height:100px;padding:15px;
-            border:1px solid #ddd;border-radius:6px;resize:none;font-size:16px;
-        }
-        .send-btn{
-            margin-top:15px;padding:10px 30px;
-            background:#409eff;color:#fff;border:none;border-radius:6px;cursor:pointer;
-        }
-
-        .msg-item{
-            background:#fff;padding:15px;border-radius:8px;
-            margin-bottom:15px;box-shadow:0 1px 5px #ddd;
-        }
+        .input-box{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px #ccc;margin-bottom:20px;}
+        textarea{width:100%;height:100px;padding:15px;border:1px solid #ddd;border-radius:6px;resize:none;font-size:16px;}
+        .send-btn{margin-top:15px;padding:10px 30px;background:#409eff;color:#fff;border:none;border-radius:6px;cursor:pointer;}
+        .msg-item{background:#fff;padding:15px;border-radius:8px;margin-bottom:15px;box-shadow:0 1px 5px #ddd;}
         .msg-info{font-size:14px;color:#666;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:5px;}
         .msg-content{font-size:16px;margin-bottom:10px;}
         .del-msg-btn{padding:5px 10px;background:#f56c6c;color:#fff;border:none;border-radius:4px;cursor:pointer;}
@@ -65,7 +32,6 @@
 <body>
     <div class="container">
         <h1>留言墙</h1>
-
         <div class="login-box" id="loginBox">
             <input type="text" id="inpUser" placeholder="账号">
             <input type="password" id="inpPwd" placeholder="密码">
@@ -74,7 +40,6 @@
 
         <div class="wall-wrap" id="wallBox">
             <button class="logout-btn" onclick="logout()">退出登录</button>
-
             <div class="admin-panel" id="adminPanel">
                 <h3>⚙️ 管理员管理中心</h3>
                 <div class="admin-set">
@@ -100,7 +65,6 @@
                 <textarea id="msgTxt" placeholder="写下留言..."></textarea>
                 <button class="send-btn" onclick="sendMsg()">提交留言</button>
             </div>
-
             <div id="msgList"></div>
         </div>
     </div>
@@ -111,44 +75,33 @@
         let isAdmin = false;
         let nowLoginUser = "";
 
-        // 初始管理员 账号:CBY 密码:CBY888123
-        const INIT_ADMIN_NAME = "CBY";
-        const INIT_ADMIN_PWD = "CBY888123";
+        const ADMIN_ACC = "CBY";
+        const ADMIN_PWD = "CBY888123";
 
         window.onload = function(){
-            initData();
+            // 强制重置管理员数据，杜绝旧缓存干扰
+            localStorage.removeItem("safeUserList");
+            userList = [{
+                name: ADMIN_ACC,
+                pwdMd5: md5(ADMIN_PWD),
+                admin: true
+            }];
+            localStorage.setItem("safeUserList", JSON.stringify(userList));
             loadMsg();
-        }
-
-        // 初始化：有数据读取，无数据创建加密管理员
-        function initData(){
-            let old = localStorage.getItem("safeUserList");
-            if(old){
-                userList = JSON.parse(old);
-            }else{
-                // 密码MD5加密存储，不存明文
-                userList = [{
-                    name: INIT_ADMIN_NAME,
-                    pwdMd5: md5(INIT_ADMIN_PWD),
-                    admin: true
-                }];
-                saveUser();
-            }
         }
 
         function saveUser(){
             localStorage.setItem("safeUserList", JSON.stringify(userList));
         }
 
-        // 登录：输入密码加密后和密文比对
         function login(){
             let u = document.getElementById("inpUser").value.trim();
             let p = document.getElementById("inpPwd").value.trim();
             let pMd5 = md5(p);
 
-            for(let i=0;i<userList.length;i++){
-                if(userList[i].name === u && userList[i].pwdMd5 === pMd5){
-                    isAdmin = userList[i].admin;
+            for(let item of userList){
+                if(item.name === u && item.pwdMd5 === pMd5){
+                    isAdmin = item.admin;
                     nowLoginUser = u;
                     goHome();
                     return;
@@ -160,7 +113,6 @@
         function goHome(){
             document.getElementById("loginBox").style.display = "none";
             document.getElementById("wallBox").style.display = "block";
-            
             if(isAdmin){
                 document.getElementById("adminPanel").style.display = "block";
                 renderUserList();
@@ -174,65 +126,48 @@
             location.reload();
         }
 
-        // 修改管理员名字
         function changeAdminName(){
             let newName = document.getElementById("newAdminName").value.trim();
-            if(!newName){
-                alert("名称不能为空");
-                return;
-            }
-            if(userList.some(x => x.name === newName)){
-                alert("账号名已被占用");
-                return;
-            }
-            let admin = userList.find(x => x.admin === true);
-            if(admin){
-                admin.name = newName;
-                nowLoginUser = newName;
-                saveUser();
-                alert("修改成功，请重新登录");
-                logout();
-            }
+            if(!newName){alert("名称不能为空");return;}
+            if(userList.some(x=>x.name===newName)){alert("账号已占用");return;}
+            let admin = userList.find(x=>x.admin);
+            admin.name = newName;
+            nowLoginUser = newName;
+            saveUser();
+            alert("修改成功，请重新登录");
+            logout();
         }
 
-        // 新增账号：密码自动加密存储
         function addUser(){
             let u = document.getElementById("newU").value.trim();
             let p = document.getElementById("newP").value.trim();
-            if(!u||!p){alert("账号密码不能为空");return;}
+            if(!u||!p){alert("不能为空");return;}
             if(userList.some(x=>x.name===u)){alert("账号已存在");return;}
-            // 加密保存
-            userList.push({
-                name:u,
-                pwdMd5: md5(p),
-                admin:false
-            });
+            userList.push({name:u,pwdMd5:md5(p),admin:false});
             saveUser();
-            alert("添加成功，可以直接登录");
+            alert("添加成功");
             document.getElementById("newU").value="";
             document.getElementById("newP").value="";
             renderUserList();
         }
 
-        // 修改密码：新密码加密
         function modifyUser(){
             let u = document.getElementById("editU").value.trim();
             let p = document.getElementById("editP").value.trim();
             let item = userList.find(x=>x.name===u);
             if(!item){alert("账号不存在");return;}
-            if(item.admin){alert("不能修改管理员");return;}
+            if(item.admin){alert("不能改管理员");return;}
             item.pwdMd5 = md5(p);
             saveUser();
             alert("修改成功");
             renderUserList();
         }
 
-        // 删除账号
         function removeUser(){
             let u = document.getElementById("editU").value.trim();
             let item = userList.find(x=>x.name===u);
             if(!item){alert("账号不存在");return;}
-            if(item.admin){alert("不能删除管理员");return;}
+            if(item.admin){alert("不能删管理员");return;}
             if(!confirm("确定删除？"))return;
             userList = userList.filter(x=>x.name!==u);
             saveUser();
@@ -240,7 +175,6 @@
             renderUserList();
         }
 
-        // 展示账号列表：只显示账号，**绝不显示原始密码**
         function renderUserList(){
             let html = "<h4>📋 所有账号列表</h4>";
             userList.forEach(i=>{
@@ -252,12 +186,10 @@
             document.getElementById("userListShow").innerHTML=html;
         }
 
-        // 留言时间
         function getTime(){
             let d=new Date();
-            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getHours()}:${d.getMinutes()}`;
+            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
         }
-
         function loadMsg(){
             let m=localStorage.getItem("msgList");
             if(m)msgList=JSON.parse(m);
@@ -266,7 +198,6 @@
             localStorage.setItem("msgList",JSON.stringify(msgList));
         }
 
-        // 发布留言
         function sendMsg(){
             let t=document.getElementById("msgTxt").value.trim();
             if(!t){alert("留言不能为空");return;}
@@ -276,25 +207,21 @@
             document.getElementById("msgTxt").value="";
         }
 
-        // 渲染留言 管理员带删除按钮
         function renderMsg(){
             let b=document.getElementById("msgList");
             b.innerHTML="";
             for(let i=msgList.length-1;i>=0;i--){
                 let i2=msgList[i];
                 let btn=isAdmin?`<button class="del-msg-btn" onclick="delMsg(${i})">删除留言</button>`:"";
-                let d=document.createElement("div");
-                d.className="msg-item";
-                d.innerHTML=`
+                b.innerHTML+=`
+                <div class="msg-item">
                     <div class="msg-info">发布人：${i2.user}｜时间：${i2.time}</div>
                     <div class="msg-content">${i2.content}</div>
                     ${btn}
-                `;
-                b.appendChild(d);
+                </div>`;
             }
         }
 
-        // 删除留言
         function delMsg(i){
             if(!confirm("确定删除？"))return;
             msgList.splice(i,1);
