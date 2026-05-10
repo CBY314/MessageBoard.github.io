@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>留言墙</title>
+    <!-- 引入MD5加密库 -->
+    <script src="https://cdn.jsdelivr.net/npm/blueimp-md5@2.19.0/js/md5.min.js"></script>
     <style>
         * {margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑";}
         body{background:#f0f4f8;padding:30px;}
@@ -109,39 +111,43 @@
         let isAdmin = false;
         let nowLoginUser = "";
 
+        // 初始管理员 账号:CBY 密码:CBY888123
+        const INIT_ADMIN_NAME = "CBY";
+        const INIT_ADMIN_PWD = "CBY888123";
+
         window.onload = function(){
             initData();
             loadMsg();
         }
 
-        // 初始化数据：有就读取，没有才新建管理员
+        // 初始化：有数据读取，无数据创建加密管理员
         function initData(){
-            let old = localStorage.getItem("userList");
+            let old = localStorage.getItem("safeUserList");
             if(old){
                 userList = JSON.parse(old);
             }else{
+                // 密码MD5加密存储，不存明文
                 userList = [{
-                    name: "CBY",
-                    pwd: "CBY888123",
+                    name: INIT_ADMIN_NAME,
+                    pwdMd5: md5(INIT_ADMIN_PWD),
                     admin: true
                 }];
-                localStorage.setItem("userList", JSON.stringify(userList));
+                saveUser();
             }
         }
 
         function saveUser(){
-            localStorage.setItem("userList", JSON.stringify(userList));
+            localStorage.setItem("safeUserList", JSON.stringify(userList));
         }
 
-        // 登录 彻底修复普通账号登录
+        // 登录：输入密码加密后和密文比对
         function login(){
             let u = document.getElementById("inpUser").value.trim();
             let p = document.getElementById("inpPwd").value.trim();
+            let pMd5 = md5(p);
 
-            // 遍历所有账号匹配
             for(let i=0;i<userList.length;i++){
-                if(userList[i].name === u && userList[i].pwd === p){
-                    // 登录成功
+                if(userList[i].name === u && userList[i].pwdMd5 === pMd5){
                     isAdmin = userList[i].admin;
                     nowLoginUser = u;
                     goHome();
@@ -189,13 +195,18 @@
             }
         }
 
-        // 新增普通账号
+        // 新增账号：密码自动加密存储
         function addUser(){
             let u = document.getElementById("newU").value.trim();
             let p = document.getElementById("newP").value.trim();
             if(!u||!p){alert("账号密码不能为空");return;}
             if(userList.some(x=>x.name===u)){alert("账号已存在");return;}
-            userList.push({name:u,pwd:p,admin:false});
+            // 加密保存
+            userList.push({
+                name:u,
+                pwdMd5: md5(p),
+                admin:false
+            });
             saveUser();
             alert("添加成功，可以直接登录");
             document.getElementById("newU").value="";
@@ -203,20 +214,20 @@
             renderUserList();
         }
 
-        // 修改普通账号密码
+        // 修改密码：新密码加密
         function modifyUser(){
             let u = document.getElementById("editU").value.trim();
             let p = document.getElementById("editP").value.trim();
             let item = userList.find(x=>x.name===u);
             if(!item){alert("账号不存在");return;}
             if(item.admin){alert("不能修改管理员");return;}
-            item.pwd = p;
+            item.pwdMd5 = md5(p);
             saveUser();
             alert("修改成功");
             renderUserList();
         }
 
-        // 删除普通账号
+        // 删除账号
         function removeUser(){
             let u = document.getElementById("editU").value.trim();
             let item = userList.find(x=>x.name===u);
@@ -229,13 +240,13 @@
             renderUserList();
         }
 
-        // 渲染所有账号+明文密码
+        // 展示账号列表：只显示账号，**绝不显示原始密码**
         function renderUserList(){
-            let html = "<h4>📋 所有账号（含密码）</h4>";
+            let html = "<h4>📋 所有账号列表</h4>";
             userList.forEach(i=>{
                 html+=`<div class="user-item">
                     <span>账号：${i.name} ${i.admin?"【管理员】":""}</span>
-                    <span>密码：${i.pwd}</span>
+                    <span>密码：已加密隐藏</span>
                 </div>`;
             });
             document.getElementById("userListShow").innerHTML=html;
@@ -244,7 +255,7 @@
         // 留言时间
         function getTime(){
             let d=new Date();
-            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
+            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getHours()}:${d.getMinutes()}`;
         }
 
         function loadMsg(){
