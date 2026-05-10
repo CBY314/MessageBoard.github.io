@@ -8,315 +8,219 @@
         body {background:#f0f4f8;padding:30px;}
         .container {max-width:700px;margin:0 auto;}
         h1 {text-align:center;color:#222;margin-bottom:30px;}
-
-        .login-box {
-            background:#fff;padding:30px;border-radius:10px;
-            box-shadow:0 2px 8px #ccc;margin:50px auto;max-width:400px;
-        }
-        .login-box input {
-            width:100%;padding:12px;margin:10px 0;
-            border:1px solid #ddd;border-radius:6px;font-size:16px;
-        }
-        .login-box button {
-            width:100%;padding:12px;background:#409eff;
-            color:#fff;border:none;border-radius:6px;
-            font-size:16px;cursor:pointer;margin-top:10px;
-        }
-
-        .input-box {
-            background:#fff;padding:20px;border-radius:10px;
-            box-shadow:0 2px 8px #ccc;margin-bottom:20px;
-        }
-        textarea {
-            width:100%;height:100px;padding:15px;
-            border:1px solid #ddd;border-radius:6px;
-            font-size:16px;resize:none;
-        }
-        .send-btn {
-            margin-top:15px;padding:10px 30px;
-            background:#409eff;color:#fff;border:none;
-            border-radius:6px;cursor:pointer;
-        }
-
+        .login-box {background:#fff;padding:30px;border-radius:10px;box-shadow:0 2px 8px #ccc;margin:50px auto;max-width:400px;}
+        .login-box input {width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:6px;font-size:16px;}
+        .login-box button {width:100%;padding:12px;background:#409eff;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;margin-top:10px;}
+        .input-box {background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px #ccc;margin-bottom:20px;}
+        textarea {width:100%;height:100px;padding:15px;border:1px solid #ddd;border-radius:6px;font-size:16px;resize:none;}
+        .send-btn {margin-top:15px;padding:10px 30px;background:#409eff;color:#fff;border:none;border-radius:6px;cursor:pointer;}
         .wall-wrap {display:none;}
-        .logout-btn {
-            margin-bottom:20px;padding:8px 20px;
-            background:#f56c6c;color:#fff;border:none;
-            border-radius:6px;cursor:pointer;
-        }
-
-        .admin-panel {
-            background:#fff;padding:20px;border-radius:10px;
-            box-shadow:0 2px 8px #ccc;margin-bottom:20px;display:none;
-        }
-        .admin-panel input {
-            padding:8px;margin:5px;border:1px solid #ddd;
-            border-radius:4px;
-        }
-        .admin-panel button {
-            padding:8px 15px;background:#67c23a;
-            color:#fff;border:none;border-radius:4px;
-            cursor:pointer;margin:5px;
-        }
-        .admin-del-btn {background:#f56c6c !important;}
-
-        .user-list-item {
-            padding:10px;background:#f8f9fa;margin:6px 0;
-            border-radius:4px;display:flex;
-            justify-content:space-between;align-items:center;
-        }
-
-        .msg-item {
-            background:#fff;padding:15px;border-radius:8px;
-            margin-bottom:15px;box-shadow:0 1px 5px #ddd;
-        }
-        .msg-info {
-            font-size:14px;color:#666;margin-bottom:8px;
-            border-bottom:1px solid #eee;padding-bottom:5px;
-        }
-        .msg-content {font-size:16px;color:#333;margin-bottom:10px;}
-        .del-msg-btn {
-            padding:5px 12px;background:#f56c6c;
-            color:#fff;border:none;border-radius:4px;
-            cursor:pointer;font-size:14px;
-        }
+        .logout-btn {margin-bottom:20px;padding:8px 20px;background:#f56c6c;color:#fff;border:none;border-radius:6px;cursor:pointer;}
+        .admin-panel {background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px #ccc;margin-bottom:20px;display:none;}
+        .admin-panel input {padding:8px;margin:5px;border:1px solid #ddd;border-radius:4px;}
+        .admin-panel button {padding:8px 15px;background:#67c23a;color:#fff;border:none;border-radius:4px;cursor:pointer;margin:5px;}
+        .admin-del {background:#f56c6c;}
+        .user-item {padding:10px;background:#f8f9fa;margin:6px 0;border-radius:4px;display:flex;justify-content:space-between;}
+        .msg-item {background:#fff;padding:15px;border-radius:8px;margin-bottom:15px;box-shadow:0 1px 5px #ddd;}
+        .msg-top {font-size:14px;color:#666;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:5px;}
+        .msg-txt {font-size:16px;color:#333;margin-bottom:10px;}
+        .del-msg {padding:5px 12px;background:#f56c6c;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>留言墙</h1>
-
-        <!-- 登录区域 -->
         <div class="login-box" id="loginBox">
-            <input type="text" id="username" placeholder="请输入账号">
-            <input type="password" id="pwd" placeholder="请输入密码">
+            <input type="text" id="acc" placeholder="输入账号">
+            <input type="password" id="pwd" placeholder="输入密码">
             <button onclick="login()">登录</button>
         </div>
 
-        <!-- 主界面 -->
         <div class="wall-wrap" id="wallBox">
             <button class="logout-btn" onclick="logout()">退出登录</button>
 
-            <!-- 管理员面板 -->
             <div class="admin-panel" id="adminPanel">
-                <h3>🔧 管理员账户管理</h3>
+                <h3>管理员账户管理</h3>
                 <div>
-                    <input type="text" id="newUser" placeholder="新账号">
+                    <input type="text" id="newAcc" placeholder="新账号">
                     <input type="password" id="newPwd" placeholder="新密码">
-                    <button onclick="addNewUser()">添加账户</button>
+                    <button onclick="addUser()">添加账号</button>
                 </div>
                 <div style="margin-top:10px">
-                    <input type="text" id="editUser" placeholder="要修改的账号">
-                    <input type="password" id="editNewPwd" placeholder="新密码">
-                    <button onclick="modifyUserPwd()">修改密码</button>
-                    <button onclick="delUser()" class="admin-del-btn">删除账号</button>
+                    <input type="text" id="editAcc" placeholder="要修改的账号">
+                    <input type="password" id="editPwd" placeholder="新密码">
+                    <button onclick="modifyPwd()">改密码</button>
+                    <button onclick="delUser()" class="admin-del">删账号</button>
                 </div>
-                <div id="userListShow" style="margin-top:15px"></div>
+                <div id="userList" style="margin-top:15px"></div>
             </div>
 
-            <!-- 留言发布 -->
             <div class="input-box">
-                <textarea id="content" placeholder="在这里写下你的留言..."></textarea>
-                <button class="send-btn" onclick="addMsg()">提交留言</button>
+                <textarea id="msgContent" placeholder="写下你的留言..."></textarea>
+                <button class="send-btn" onclick="submitMsg()">提交留言</button>
             </div>
 
-            <!-- 留言列表 -->
             <div id="msgList"></div>
         </div>
     </div>
 
     <script>
-        // 初始化管理员 只第一次生效
-        function initAdmin(){
-            let data = localStorage.getItem("userData");
+        // 固定管理员账号密码
+        const ADMIN_ACC = "CBY314";
+        const ADMIN_PWD = "CBY888123";
+
+        let userArr = [];
+        let msgArr = [];
+        let isAdmin = false;
+        let nowUser = "";
+
+        // 初始化
+        window.onload = function(){
+            initData();
+            loadMsgData();
+        }
+
+        // 初始化管理员，无数据才创建
+        function initData(){
+            let data = localStorage.getItem("userArr");
             if(!data){
-                let initList = [
-                    {name:"CBY314", pwd:"CBY888123", isAdmin:true}
-                ];
-                localStorage.setItem("userData", JSON.stringify(initList));
+                userArr = [{acc:ADMIN_ACC,pwd:ADMIN_PWD,admin:true}];
+                localStorage.setItem("userArr",JSON.stringify(userArr));
+            }else{
+                userArr = JSON.parse(data);
             }
         }
 
-        let msgArr = [];
-        let currentIsAdmin = false;
-        let loginUserName = "";
-
-        // 页面加载
-        window.onload = function(){
-            initAdmin();
-            loadMsg();
-        }
-
-        // 获取用户列表
-        function getUserList(){
-            return JSON.parse(localStorage.getItem("userData")) || [];
-        }
-        // 保存用户列表
-        function saveUserList(list){
-            localStorage.setItem("userData", JSON.stringify(list));
-        }
-
-        // 获取当前时间
-        function getNowTime(){
-            let d = new Date();
-            let y = d.getFullYear();
-            let m = d.getMonth() + 1;
-            let day = d.getDate();
-            let h = d.getHours();
-            let min = d.getMinutes();
-            return `${y}-${m}-${day} ${h}:${min}`;
+        // 保存用户
+        function saveUser(){
+            localStorage.setItem("userArr",JSON.stringify(userArr));
         }
 
         // 登录
         function login(){
-            let un = document.getElementById("username").value.trim();
-            let pd = document.getElementById("pwd").value.trim();
-            let list = getUserList();
-
-            let user = list.find(x => x.name === un);
-            if(!user){
-                alert("账号不存在");
+            let acc = document.getElementById("acc").value.trim();
+            let pwd = document.getElementById("pwd").value.trim();
+            let find = userArr.find(x=>x.acc===acc&&x.pwd===pwd);
+            if(!find){
+                alert("密码错误！");
                 return;
             }
-            if(user.pwd !== pd){
-                alert("密码错误");
-                return;
-            }
-
-            // 登录成功
-            loginUserName = un;
-            currentIsAdmin = user.isAdmin;
-
+            nowUser = acc;
+            isAdmin = !!find.admin;
             document.getElementById("loginBox").style.display = "none";
             document.getElementById("wallBox").style.display = "block";
-
-            // 管理员显示面板 + 渲染账号列表（带明文密码）
-            if(currentIsAdmin){
+            if(isAdmin){
                 document.getElementById("adminPanel").style.display = "block";
-                renderUserList();
+                showUserList();
             }
             renderMsg();
         }
 
-        // 退出登录
+        // 退出
         function logout(){
             document.getElementById("wallBox").style.display = "none";
             document.getElementById("loginBox").style.display = "block";
-            document.getElementById("username").value = "";
+            document.getElementById("acc").value = "";
             document.getElementById("pwd").value = "";
             document.getElementById("adminPanel").style.display = "none";
-            currentIsAdmin = false;
-            loginUserName = "";
+            isAdmin = false;
+            nowUser = "";
         }
 
-        // 管理员：添加账号
-        function addNewUser(){
-            let un = document.getElementById("newUser").value.trim();
-            let pd = document.getElementById("newPwd").value.trim();
-            if(!un || !pd){
-                alert("账号密码不能为空");
-                return;
-            }
-            let list = getUserList();
-            if(list.find(x => x.name === un)){
-                alert("账号已存在");
-                return;
-            }
-            list.push({name:un, pwd:pd, isAdmin:false});
-            saveUserList(list);
+        // 管理员添加账号
+        function addUser(){
+            let acc = document.getElementById("newAcc").value.trim();
+            let pwd = document.getElementById("newPwd").value.trim();
+            if(!acc||!pwd){alert("账号密码不能为空");return;}
+            if(userArr.find(x=>x.acc===acc)){alert("账号已存在");return;}
+            userArr.push({acc:acc,pwd:pwd,admin:false});
+            saveUser();
             alert("添加成功");
-            document.getElementById("newUser").value = "";
+            document.getElementById("newAcc").value = "";
             document.getElementById("newPwd").value = "";
-            renderUserList();
+            showUserList();
         }
 
-        // 管理员：修改密码
-        function modifyUserPwd(){
-            let un = document.getElementById("editUser").value.trim();
-            let newPd = document.getElementById("editNewPwd").value.trim();
-            if(!un || !newPd){
-                alert("请输入账号和新密码");
-                return;
-            }
-            let list = getUserList();
-            let item = list.find(x => x.name === un);
-            if(!item){
-                alert("账号不存在");
-                return;
-            }
-            if(item.isAdmin){
-                alert("管理员账号禁止修改");
-                return;
-            }
-            item.pwd = newPd;
-            saveUserList(list);
+        // 管理员改密码
+        function modifyPwd(){
+            let acc = document.getElementById("editAcc").value.trim();
+            let newPwd = document.getElementById("editPwd").value.trim();
+            if(!acc||!newPwd){alert("请输入账号和新密码");return;}
+            let item = userArr.find(x=>x.acc===acc);
+            if(!item){alert("账号不存在");return;}
+            if(item.admin){alert("管理员禁止修改");return;}
+            item.pwd = newPwd;
+            saveUser();
             alert("修改成功");
-            renderUserList();
+            showUserList();
         }
 
-        // 管理员：删除账号
+        // 管理员删账号
         function delUser(){
-            let un = document.getElementById("editUser").value.trim();
-            if(!un){
-                alert("请输入账号");
-                return;
-            }
-            let list = getUserList();
-            let item = list.find(x => x.name === un);
-            if(!item){
-                alert("账号不存在");
-                return;
-            }
-            if(item.isAdmin){
-                alert("管理员不能删除");
-                return;
-            }
-            if(!confirm("确定删除？")) return;
-            list = list.filter(x => x.name !== un);
-            saveUserList(list);
+            let acc = document.getElementById("editAcc").value.trim();
+            if(!acc){alert("请输入账号");return;}
+            let item = userArr.find(x=>x.acc===acc);
+            if(!item){alert("账号不存在");return;}
+            if(item.admin){alert("管理员不能删除");return;}
+            if(!confirm("确定删除？"))return;
+            userArr = userArr.filter(x=>x.acc!==acc);
+            saveUser();
             alert("删除成功");
-            renderUserList();
+            showUserList();
         }
 
-        // 渲染账号列表【管理员可见明文密码】
-        function renderUserList(){
-            let list = getUserList();
-            let html = "<h4>📋 所有账号（含密码）</h4>";
-            list.forEach(item=>{
-                html += `
-                <div class="user-list-item">
-                    <span>账号：${item.name} ${item.isAdmin?'👑管理员':''}</span>
+        // 管理员查看所有账号+明文密码
+        function showUserList(){
+            let html = "<h4>所有账号（含密码）</h4>";
+            userArr.forEach(item=>{
+                html += `<div class="user-item">
+                    <span>账号：${item.acc} ${item.admin?'【管理员】':''}</span>
                     <span>密码：${item.pwd}</span>
-                </div>
-                `;
+                </div>`;
             });
-            document.getElementById("userListShow").innerHTML = html;
+            document.getElementById("userList").innerHTML = html;
+        }
+
+        // 获取时间
+        function getTime(){
+            let d = new Date();
+            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
         }
 
         // 加载留言
-        function loadMsg(){
-            let old = localStorage.getItem("liuyanData");
-            if(old) msgArr = JSON.parse(old);
-            renderMsg();
+        function loadMsgData(){
+            let m = localStorage.getItem("msgArr");
+            if(m) msgArr = JSON.parse(m);
         }
 
-        // 渲染留言 + 管理员显示删除按钮
+        // 保存留言
+        function saveMsg(){
+            localStorage.setItem("msgArr",JSON.stringify(msgArr));
+        }
+
+        // 发布留言
+        function submitMsg(){
+            let txt = document.getElementById("msgContent").value.trim();
+            if(!txt){alert("留言不能为空");return;}
+            msgArr.push({user:nowUser,time:getTime(),content:txt});
+            saveMsg();
+            renderMsg();
+            document.getElementById("msgContent").value = "";
+        }
+
+        // 渲染留言 管理员带删除按钮
         function renderMsg(){
             let box = document.getElementById("msgList");
             box.innerHTML = "";
-            // 倒序 最新在最上面
-            for(let i = msgArr.length - 1; i >= 0; i--){
+            for(let i=msgArr.length-1;i>=0;i--){
                 let m = msgArr[i];
-                let delBtn = currentIsAdmin 
-                    ? `<button class="del-msg-btn" onclick="delMsg(${i})">删除这条留言</button>`
-                    : "";
-
+                let btn = isAdmin ? `<button class="del-msg" onclick="delMsg(${i})">删除留言</button>` : "";
                 let div = document.createElement("div");
                 div.className = "msg-item";
                 div.innerHTML = `
-                    <div class="msg-info">发布人：${m.user}｜时间：${m.time}</div>
-                    <div class="msg-content">${m.content}</div>
-                    ${delBtn}
+                    <div class="msg-top">发布人：${m.user} ｜ 时间：${m.time}</div>
+                    <div class="msg-txt">${m.content}</div>
+                    ${btn}
                 `;
                 box.appendChild(div);
             }
@@ -324,28 +228,10 @@
 
         // 删除留言
         function delMsg(idx){
-            if(!confirm("确定删除这条留言？")) return;
-            msgArr.splice(idx, 1);
-            localStorage.setItem("liuyanData", JSON.stringify(msgArr));
+            if(!confirm("确定删除这条留言？"))return;
+            msgArr.splice(idx,1);
+            saveMsg();
             renderMsg();
-        }
-
-        // 发布留言
-        function addMsg(){
-            let txt = document.getElementById("content").value.trim();
-            if(!txt){
-                alert("留言不能为空");
-                return;
-            }
-            let obj = {
-                user: loginUserName,
-                time: getNowTime(),
-                content: txt
-            };
-            msgArr.push(obj);
-            localStorage.setItem("liuyanData", JSON.stringify(msgArr));
-            renderMsg();
-            document.getElementById("content").value = "";
         }
     </script>
 </body>
