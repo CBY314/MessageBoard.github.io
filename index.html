@@ -133,15 +133,13 @@
             localStorage.setItem("userList", JSON.stringify(userList));
         }
 
-        // 登录 彻底修复普通账号登录
+        // 登录
         function login(){
             let u = document.getElementById("inpUser").value.trim();
             let p = document.getElementById("inpPwd").value.trim();
 
-            // 遍历所有账号匹配
             for(let i=0;i<userList.length;i++){
                 if(userList[i].name === u && userList[i].pwd === p){
-                    // 登录成功
                     isAdmin = userList[i].admin;
                     nowLoginUser = u;
                     goHome();
@@ -265,13 +263,17 @@
             document.getElementById("msgTxt").value="";
         }
 
-        // 渲染留言 管理员带删除按钮
+        // 渲染留言：自己能删自己的，管理员能删全部
         function renderMsg(){
             let b=document.getElementById("msgList");
             b.innerHTML="";
             for(let i=msgList.length-1;i>=0;i--){
                 let i2=msgList[i];
-                let btn=isAdmin?`<button class="del-msg-btn" onclick="delMsg(${i})">删除留言</button>`:"";
+                // 管理员 或者 是自己发的 才显示删除按钮
+                let btn = "";
+                if(isAdmin || i2.user === nowLoginUser){
+                    btn = `<button class="del-msg-btn" onclick="delMsg(${i})">删除留言</button>`;
+                }
                 let d=document.createElement("div");
                 d.className="msg-item";
                 d.innerHTML=`
