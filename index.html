@@ -11,10 +11,65 @@
             font-family: "微软雅黑", sans-serif;
         }
         body {
-            background: linear-gradient(135deg, #eef2f8 0%, #dce4f5 100%);
             padding: 40px 20px;
             min-height: 100vh;
+            transition: background 1s ease;
         }
+        body.style1 {
+            background: linear-gradient(-45deg, #a8e6cf, #dcedc1, #ffd3b6, #ffaaa5);
+            background-size: 400% 400%;
+            animation: bgMove 15s ease infinite;
+        }
+        body.style2 {
+            background: linear-gradient(-45deg, #74b9ff, #a29bfe, #fd79a8, #ffeaa7);
+            background-size: 400% 400%;
+            animation: bgMove 15s ease infinite;
+        }
+        body.style3 {
+            background: linear-gradient(-45deg, #00b894, #00cec9, #74b9ff, #6c5ce7);
+            background-size: 400% 400%;
+            animation: bgMove 15s ease infinite;
+        }
+        body.style4 {
+            background: linear-gradient(-45deg, #f8b500, #fc5c65, #fd79a8, #a55eea);
+            background-size: 400% 400%;
+            animation: bgMove 15s ease infinite;
+        }
+        body.style5 {
+            background: #f0f4f8;
+        }
+
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 背景切换栏 */
+        .bg-switch {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 999;
+        }
+        .bg-switch button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            margin: 3px;
+            cursor: pointer;
+        }
+        .bg1 { background: linear-gradient(45deg, #a8e6cf, #ffaaa5); }
+        .bg2 { background: linear-gradient(45deg, #74b9ff, #fd79a8); }
+        .bg3 { background: linear-gradient(45deg, #00b894, #6c5ce7); }
+        .bg4 { background: linear-gradient(45deg, #f8b500, #a55eea); }
+        .bg5 { background: #f0f4f8; }
+
         .container {
             max-width: 720px;
             margin: 0 auto;
@@ -27,7 +82,6 @@
             letter-spacing: 2px;
         }
 
-        /* 登录卡片 */
         .login-box {
             background: #ffffff;
             padding: 35px;
@@ -87,7 +141,6 @@
             transform: translateY(-2px);
         }
 
-        /* 管理员面板 */
         .admin-panel {
             background: #ffffff;
             padding: 25px;
@@ -144,7 +197,6 @@
             border-top: 1px solid #eee;
         }
 
-        /* 留言输入框 */
         .input-box {
             background: #ffffff;
             padding: 25px;
@@ -184,7 +236,6 @@
             transform: translateY(-2px);
         }
 
-        /* 留言条目 */
         .msg-item {
             background: #ffffff;
             padding: 20px;
@@ -197,7 +248,6 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         }
-        /* 置顶样式 */
         .msg-top {
             border-left: 5px solid #ff6b6b;
             background: #fff7f7;
@@ -215,7 +265,6 @@
             color: #333;
             line-height: 1.6;
         }
-        /* 按钮美化 */
         .del-msg-btn, .top-btn, .move-btn {
             padding: 6px 10px;
             border: none;
@@ -239,286 +288,307 @@
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>✨ 留言墙 ✨</h1>
+<body class="style1">
 
-        <div class="login-box" id="loginBox">
-            <input type="text" id="inpUser" placeholder="请输入账号">
-            <input type="password" id="inpPwd" placeholder="请输入密码">
-            <button onclick="login()">立即登录</button>
-        </div>
+<!-- 背景切换按钮 -->
+<div class="bg-switch">
+    <button class="bg1" onclick="setBg('style1')"></button>
+    <button class="bg2" onclick="setBg('style2')"></button>
+    <button class="bg3" onclick="setBg('style3')"></button>
+    <button class="bg4" onclick="setBg('style4')"></button>
+    <button class="bg5" onclick="setBg('style5')"></button>
+</div>
 
-        <div class="wall-wrap" id="wallBox">
-            <button class="logout-btn" onclick="logout()">退出登录</button>
+<div class="container">
+    <h1>✨ 留言墙 ✨</h1>
 
-            <div class="admin-panel" id="adminPanel">
-                <h3>⚙️ 管理员管理中心</h3>
-                <div class="admin-set">
-                    <h4>修改管理员账号名</h4>
-                    <input type="text" id="newAdminName" placeholder="输入新管理员名称">
-                    <button onclick="changeAdminName()">确认修改</button>
-                </div>
-                <div style="margin-top:15px;">
-                    <input type="text" id="newU" placeholder="新增账号">
-                    <input type="password" id="newP" placeholder="密码">
-                    <button onclick="addUser()">添加账号</button>
-                </div>
-                <div style="margin-top:10px;">
-                    <input type="text" id="editU" placeholder="操作账号">
-                    <input type="password" id="editP" placeholder="新密码">
-                    <button onclick="modifyUser()">修改密码</button>
-                    <button onclick="removeUser()" class="admin-del">删除账号</button>
-                </div>
-                <div id="userListShow" style="margin-top:15px;"></div>
-            </div>
-
-            <div class="input-box">
-                <textarea id="msgTxt" placeholder="写下你的留言..."></textarea>
-                <button class="send-btn" onclick="sendMsg()">提交留言</button>
-            </div>
-
-            <div id="msgList"></div>
-        </div>
+    <div class="login-box" id="loginBox">
+        <input type="text" id="inpUser" placeholder="请输入账号">
+        <input type="password" id="inpPwd" placeholder="请输入密码">
+        <button onclick="login()">立即登录</button>
     </div>
 
-    <script>
-        let userList = [];
-        let msgList = [];
-        let isAdmin = false;
-        let nowLoginUser = "";
+    <div class="wall-wrap" id="wallBox">
+        <button class="logout-btn" onclick="logout()">退出登录</button>
 
-        window.onload = function(){
-            initData();
-            loadMsg();
-        }
+        <div class="admin-panel" id="adminPanel">
+            <h3>⚙️ 管理员管理中心</h3>
+            <div class="admin-set">
+                <h4>修改管理员账号名</h4>
+                <input type="text" id="newAdminName" placeholder="输入新管理员名称">
+                <button onclick="changeAdminName()">确认修改</button>
+            </div>
+            <div style="margin-top:15px;">
+                <input type="text" id="newU" placeholder="新增账号">
+                <input type="password" id="newP" placeholder="密码">
+                <button onclick="addUser()">添加账号</button>
+            </div>
+            <div style="margin-top:10px;">
+                <input type="text" id="editU" placeholder="操作账号">
+                <input type="password" id="editP" placeholder="新密码">
+                <button onclick="modifyUser()">修改密码</button>
+                <button onclick="removeUser()" class="admin-del">删除账号</button>
+            </div>
+            <div id="userListShow" style="margin-top:15px;"></div>
+        </div>
 
-        function initData(){
-            let old = localStorage.getItem("userList");
-            if(old){
-                userList = JSON.parse(old);
-            }else{
-                userList = [{
-                    name: "CBY",
-                    pwd: "CBY888123",
-                    admin: true
-                }];
-                localStorage.setItem("userList", JSON.stringify(userList));
-            }
-        }
+        <div class="input-box">
+            <textarea id="msgTxt" placeholder="写下你的留言..."></textarea>
+            <button class="send-btn" onclick="sendMsg()">提交留言</button>
+        </div>
 
-        function saveUser(){
+        <div id="msgList"></div>
+    </div>
+</div>
+
+<script>
+    let userList = [];
+    let msgList = [];
+    let isAdmin = false;
+    let nowLoginUser = "";
+
+    window.onload = function(){
+        initData();
+        loadMsg();
+        loadBg();
+    }
+
+    // 背景切换
+    function setBg(cname){
+        document.body.className = cname;
+        localStorage.setItem("bgStyle", cname);
+    }
+    function loadBg(){
+        let bg = localStorage.getItem("bgStyle");
+        if(bg) document.body.className = bg;
+    }
+
+    function initData(){
+        let old = localStorage.getItem("userList");
+        if(old){
+            userList = JSON.parse(old);
+        }else{
+            userList = [{
+                name: "CBY",
+                pwd: "CBY888123",
+                admin: true
+            }];
             localStorage.setItem("userList", JSON.stringify(userList));
         }
+    }
 
-        function login(){
-            let u = document.getElementById("inpUser").value.trim();
-            let p = document.getElementById("inpPwd").value.trim();
-            for(let i=0;i<userList.length;i++){
-                if(userList[i].name === u && userList[i].pwd === p){
-                    isAdmin = userList[i].admin;
-                    nowLoginUser = u;
-                    goHome();
-                    return;
-                }
-            }
-            alert("账号或密码错误！");
-        }
+    function saveUser(){
+        localStorage.setItem("userList", JSON.stringify(userList));
+    }
 
-        function goHome(){
-            document.getElementById("loginBox").style.display = "none";
-            document.getElementById("wallBox").style.display = "block";
-            if(isAdmin){
-                document.getElementById("adminPanel").style.display = "block";
-                renderUserList();
-            }else{
-                document.getElementById("adminPanel").style.display = "none";
-            }
-            renderMsg();
-        }
-
-        function logout(){
-            location.reload();
-        }
-
-        function changeAdminName(){
-            let newName = document.getElementById("newAdminName").value.trim();
-            if(!newName){alert("名称不能为空");return;}
-            if(userList.some(x => x.name === newName)){alert("账号名已被占用");return;}
-            let admin = userList.find(x => x.admin === true);
-            if(admin){
-                admin.name = newName;
-                nowLoginUser = newName;
-                saveUser();
-                alert("修改成功，请重新登录");
-                logout();
+    function login(){
+        let u = document.getElementById("inpUser").value.trim();
+        let p = document.getElementById("inpPwd").value.trim();
+        for(let i=0;i<userList.length;i++){
+            if(userList[i].name === u && userList[i].pwd === p){
+                isAdmin = userList[i].admin;
+                nowLoginUser = u;
+                goHome();
+                return;
             }
         }
+        alert("账号或密码错误！");
+    }
 
-        function addUser(){
-            let u = document.getElementById("newU").value.trim();
-            let p = document.getElementById("newP").value.trim();
-            if(!u||!p){alert("账号密码不能为空");return;}
-            if(userList.some(x=>x.name===u)){alert("账号已存在");return;}
-            userList.push({name:u,pwd:p,admin:false});
-            saveUser();
-            alert("添加成功，可以直接登录");
-            document.getElementById("newU").value="";
-            document.getElementById("newP").value="";
+    function goHome(){
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("wallBox").style.display = "block";
+        if(isAdmin){
+            document.getElementById("adminPanel").style.display = "block";
             renderUserList();
+        }else{
+            document.getElementById("adminPanel").style.display = "none";
         }
+        renderMsg();
+    }
 
-        function modifyUser(){
-            let u = document.getElementById("editU").value.trim();
-            let p = document.getElementById("editP").value.trim();
-            let item = userList.find(x=>x.name===u);
-            if(!item){alert("账号不存在");return;}
-            if(item.admin){alert("不能修改管理员");return;}
-            item.pwd = p;
+    function logout(){
+        location.reload();
+    }
+
+    function changeAdminName(){
+        let newName = document.getElementById("newAdminName").value.trim();
+        if(!newName){alert("名称不能为空");return;}
+        if(userList.some(x => x.name === newName)){alert("账号名已被占用");return;}
+        let admin = userList.find(x => x.admin === true);
+        if(admin){
+            admin.name = newName;
+            nowLoginUser = newName;
             saveUser();
-            alert("修改成功");
-            renderUserList();
+            alert("修改成功，请重新登录");
+            logout();
         }
+    }
 
-        function removeUser(){
-            let u = document.getElementById("editU").value.trim();
-            let item = userList.find(x=>x.name===u);
-            if(!item){alert("账号不存在");return;}
-            if(item.admin){alert("不能删除管理员");return;}
-            if(!confirm("确定删除？"))return;
-            userList = userList.filter(x=>x.name!==u);
-            saveUser();
-            alert("删除成功");
-            renderUserList();
-        }
+    function addUser(){
+        let u = document.getElementById("newU").value.trim();
+        let p = document.getElementById("newP").value.trim();
+        if(!u||!p){alert("账号密码不能为空");return;}
+        if(userList.some(x=>x.name===u)){alert("账号已存在");return;}
+        userList.push({name:u,pwd:p,admin:false});
+        saveUser();
+        alert("添加成功，可以直接登录");
+        document.getElementById("newU").value="";
+        document.getElementById("newP").value="";
+        renderUserList();
+    }
 
-        function renderUserList(){
-            let html = "<h4>📋 所有账号（含密码）</h4>";
-            userList.forEach(i=>{
-                html+=`<div class="user-item">
-                    <span>账号：${i.name} ${i.admin?"【管理员】":""}</span>
-                    <span>密码：${i.pwd}</span>
-                </div>`;
-            });
-            document.getElementById("userListShow").innerHTML=html;
-        }
+    function modifyUser(){
+        let u = document.getElementById("editU").value.trim();
+        let p = document.getElementById("editP").value.trim();
+        let item = userList.find(x=>x.name===u);
+        if(!item){alert("账号不存在");return;}
+        if(item.admin){alert("不能修改管理员");return;}
+        item.pwd = p;
+        saveUser();
+        alert("修改成功");
+        renderUserList();
+    }
 
-        function getTime(){
-            let d=new Date();
-            return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
-        }
+    function removeUser(){
+        let u = document.getElementById("editU").value.trim();
+        let item = userList.find(x=>x.name===u);
+        if(!item){alert("账号不存在");return;}
+        if(item.admin){alert("不能删除管理员");return;}
+        if(!confirm("确定删除？"))return;
+        userList = userList.filter(x=>x.name!==u);
+        saveUser();
+        alert("删除成功");
+        renderUserList();
+    }
 
-        function loadMsg(){
-            let m=localStorage.getItem("msgList");
-            if(m)msgList=JSON.parse(m);
-        }
-        function saveMsg(){
-            localStorage.setItem("msgList",JSON.stringify(msgList));
-        }
+    function renderUserList(){
+        let html = "<h4>📋 所有账号（含密码）</h4>";
+        userList.forEach(i=>{
+            html+=`<div class="user-item">
+                <span>账号：${i.name} ${i.admin?"【管理员】":""}</span>
+                <span>密码：${i.pwd}</span>
+            </div>`;
+        });
+        document.getElementById("userListShow").innerHTML=html;
+    }
 
-        function sendMsg(){
-            let t=document.getElementById("msgTxt").value.trim();
-            if(!t){alert("留言不能为空");return;}
-            msgList.push({user:nowLoginUser,time:getTime(),content:t,isTop:false,topOrder:0});
-            saveMsg();
-            renderMsg();
-            document.getElementById("msgTxt").value="";
-        }
+    function getTime(){
+        let d=new Date();
+        return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
+    }
 
-        function toggleTop(idx){
-            msgList[idx].isTop = !msgList[idx].isTop;
-            if(msgList[idx].isTop){
-                let topArr = msgList.filter(m=>m.isTop);
-                msgList[idx].topOrder = topArr.length;
-            }else{
-                msgList[idx].topOrder = 0;
-            }
-            saveMsg();
-            renderMsg();
-        }
+    function loadMsg(){
+        let m=localStorage.getItem("msgList");
+        if(m)msgList=JSON.parse(m);
+    }
+    function saveMsg(){
+        localStorage.setItem("msgList",JSON.stringify(msgList));
+    }
 
-        function moveUp(idx){
-            if(!msgList[idx].isTop) return;
-            let currOrder = msgList[idx].topOrder;
-            if(currOrder <= 1) return;
-            for(let i=0;i<msgList.length;i++){
-                if(msgList[i].isTop && msgList[i].topOrder === currOrder - 1){
-                    let temp = msgList[i].topOrder;
-                    msgList[i].topOrder = msgList[idx].topOrder;
-                    msgList[idx].topOrder = temp;
-                    saveMsg();
-                    renderMsg();
-                    return;
-                }
-            }
-        }
+    function sendMsg(){
+        let t=document.getElementById("msgTxt").value.trim();
+        if(!t){alert("留言不能为空");return;}
+        msgList.push({user:nowLoginUser,time:getTime(),content:t,isTop:false,topOrder:0});
+        saveMsg();
+        renderMsg();
+        document.getElementById("msgTxt").value="";
+    }
 
-        function moveDown(idx){
-            if(!msgList[idx].isTop) return;
-            let currOrder = msgList[idx].topOrder;
+    function toggleTop(idx){
+        msgList[idx].isTop = !msgList[idx].isTop;
+        if(msgList[idx].isTop){
             let topArr = msgList.filter(m=>m.isTop);
-            if(currOrder >= topArr.length) return;
-            for(let i=0;i<msgList.length;i++){
-                if(msgList[i].isTop && msgList[i].topOrder === currOrder + 1){
-                    let temp = msgList[i].topOrder;
-                    msgList[i].topOrder = msgList[idx].topOrder;
-                    msgList[idx].topOrder = temp;
-                    saveMsg();
-                    renderMsg();
-                    return;
-                }
+            msgList[idx].topOrder = topArr.length;
+        }else{
+            msgList[idx].topOrder = 0;
+        }
+        saveMsg();
+        renderMsg();
+    }
+
+    function moveUp(idx){
+        if(!msgList[idx].isTop) return;
+        let currOrder = msgList[idx].topOrder;
+        if(currOrder <= 1) return;
+        for(let i=0;i<msgList.length;i++){
+            if(msgList[i].isTop && msgList[i].topOrder === currOrder - 1){
+                let temp = msgList[i].topOrder;
+                msgList[i].topOrder = msgList[idx].topOrder;
+                msgList[idx].topOrder = temp;
+                saveMsg();
+                renderMsg();
+                return;
             }
         }
+    }
 
-        function delMsg(i){
-            if(!confirm("确定删除？"))return;
-            msgList.splice(i,1);
-            saveMsg();
-            renderMsg();
+    function moveDown(idx){
+        if(!msgList[idx].isTop) return;
+        let currOrder = msgList[idx].topOrder;
+        let topArr = msgList.filter(m=>m.isTop);
+        if(currOrder >= topArr.length) return;
+        for(let i=0;i<msgList.length;i++){
+            if(msgList[i].isTop && msgList[i].topOrder === currOrder + 1){
+                let temp = msgList[i].topOrder;
+                msgList[i].topOrder = msgList[idx].topOrder;
+                msgList[idx].topOrder = temp;
+                saveMsg();
+                renderMsg();
+                return;
+            }
         }
+    }
 
-        function renderMsg(){
-            let b=document.getElementById("msgList");
-            b.innerHTML="";
-            let topMsgs = msgList.filter(m=>m.isTop).sort((a,b)=>a.topOrder - b.topOrder);
-            let normalMsgs = msgList.filter(m=>!m.isTop).reverse();
+    function delMsg(i){
+        if(!confirm("确定删除？"))return;
+        msgList.splice(i,1);
+        saveMsg();
+        renderMsg();
+    }
 
-            topMsgs.forEach((item)=>{
-                let idx = msgList.findIndex(m=>m.user===item.user && m.time===item.time && m.content===item.content);
-                renderOneMsg(idx,true);
-            });
-            normalMsgs.forEach((item)=>{
-                let idx = msgList.findIndex(m=>m.user===item.user && m.time===item.time && m.content===item.content);
-                renderOneMsg(idx,false);
-            });
-        }
+    function renderMsg(){
+        let b=document.getElementById("msgList");
+        b.innerHTML="";
+        let topMsgs = msgList.filter(m=>m.isTop).sort((a,b)=>a.topOrder - b.topOrder);
+        let normalMsgs = msgList.filter(m=>!m.isTop).reverse();
 
-        function renderOneMsg(idx,isTop){
-            let i2 = msgList[idx];
-            let d=document.createElement("div");
-            d.className="msg-item" + (isTop ? " msg-top" : "");
+        topMsgs.forEach((item)=>{
+            let idx = msgList.findIndex(m=>m.user===item.user && m.time===item.time && m.content===item.content);
+            renderOneMsg(idx,true);
+        });
+        normalMsgs.forEach((item)=>{
+            let idx = msgList.findIndex(m=>m.user===item.user && m.time===item.time && m.content===item.content);
+            renderOneMsg(idx,false);
+        });
+    }
 
-            let btnHtml = "";
-            if(isAdmin){
-                btnHtml += `<button class="top-btn" onclick="toggleTop(${idx})">${isTop?'取消置顶':'置顶'}</button>`;
-                if(isTop){
-                    btnHtml += `<button class="move-btn" onclick="moveUp(${idx})">上移</button>`;
-                    btnHtml += `<button class="move-btn" onclick="moveDown(${idx})">下移</button>`;
-                }
+    function renderOneMsg(idx,isTop){
+        let i2 = msgList[idx];
+        let d=document.createElement("div");
+        d.className="msg-item" + (isTop ? " msg-top" : "");
+
+        let btnHtml = "";
+        if(isAdmin){
+            btnHtml += `<button class="top-btn" onclick="toggleTop(${idx})">${isTop?'取消置顶':'置顶'}</button>`;
+            if(isTop){
+                btnHtml += `<button class="move-btn" onclick="moveUp(${idx})">上移</button>`;
+                btnHtml += `<button class="move-btn" onclick="moveDown(${idx})">下移</button>`;
+            }
+            btnHtml += `<button class="del-msg-btn" onclick="delMsg(${idx})">删除</button>`;
+        }else{
+            if(i2.user === nowLoginUser){
                 btnHtml += `<button class="del-msg-btn" onclick="delMsg(${idx})">删除</button>`;
-            }else{
-                if(i2.user === nowLoginUser){
-                    btnHtml += `<button class="del-msg-btn" onclick="delMsg(${idx})">删除</button>`;
-                }
             }
-
-            d.innerHTML=`
-                <div class="msg-info">${isTop?'📌 置顶｜':''}发布人：${i2.user}｜时间：${i2.time}</div>
-                <div class="msg-content">${i2.content}</div>
-                ${btnHtml}
-            `;
-            document.getElementById("msgList").appendChild(d);
         }
-    </script>
+
+        d.innerHTML=`
+            <div class="msg-info">${isTop?'📌 置顶｜':''}发布人：${i2.user}｜时间：${i2.time}</div>
+            <div class="msg-content">${i2.content}</div>
+            ${btnHtml}
+        `;
+        document.getElementById("msgList").appendChild(d);
+    }
+</script>
 </body>
 </html>
