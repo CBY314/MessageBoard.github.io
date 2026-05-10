@@ -30,7 +30,7 @@
 
         .admin-panel{
             background:#fff;padding:20px;border-radius:10px;
-            box-shadow:0 2px 8px #ccc;margin-bottom:20px;
+            box-shadow:0 2px 8px #ccc;margin-bottom:20px;display:none;
         }
         .admin-panel input{padding:8px;margin:5px;border:1px solid #ddd;border-radius:4px;}
         .admin-panel button{padding:8px 12px;background:#67c23a;color:#fff;border:none;border-radius:4px;cursor:pointer;margin:5px;}
@@ -73,7 +73,6 @@
         <div class="wall-wrap" id="wallBox">
             <button class="logout-btn" onclick="logout()">退出登录</button>
 
-            <!-- 管理员面板 默认结构完整保留 -->
             <div class="admin-panel" id="adminPanel">
                 <h3>⚙️ 管理员管理中心</h3>
                 <div class="admin-set">
@@ -110,51 +109,52 @@
         let isAdmin = false;
         let nowLoginUser = "";
 
-        // 页面加载强制重置管理员，保证面板正常
         window.onload = function(){
-            localStorage.removeItem("userList");
-            // 初始管理员 CBY / CBY888123
-            userList = [{
-                name: "CBY",
-                pwd: "CBY888123",
-                admin: true
-            }];
-            localStorage.setItem("userList", JSON.stringify(userList));
+            initData();
             loadMsg();
+        }
+
+        // 初始化数据：有就读取，没有才新建管理员
+        function initData(){
+            let old = localStorage.getItem("userList");
+            if(old){
+                userList = JSON.parse(old);
+            }else{
+                userList = [{
+                    name: "CBY",
+                    pwd: "CBY888123",
+                    admin: true
+                }];
+                localStorage.setItem("userList", JSON.stringify(userList));
+            }
         }
 
         function saveUser(){
             localStorage.setItem("userList", JSON.stringify(userList));
         }
 
+        // 登录 彻底修复普通账号登录
         function login(){
             let u = document.getElementById("inpUser").value.trim();
             let p = document.getElementById("inpPwd").value.trim();
 
-            // 直接硬匹配管理员
-            if(u === "CBY" && p === "CBY888123"){
-                isAdmin = true;
-                nowLoginUser = u;
-                goHome();
-                return;
+            // 遍历所有账号匹配
+            for(let i=0;i<userList.length;i++){
+                if(userList[i].name === u && userList[i].pwd === p){
+                    // 登录成功
+                    isAdmin = userList[i].admin;
+                    nowLoginUser = u;
+                    goHome();
+                    return;
+                }
             }
-
-            // 普通用户
-            let find = userList.find(x => x.name === u && x.pwd === p);
-            if(!find){
-                alert("账号或密码错误！");
-                return;
-            }
-            isAdmin = false;
-            nowLoginUser = u;
-            goHome();
+            alert("账号或密码错误！");
         }
 
         function goHome(){
             document.getElementById("loginBox").style.display = "none";
             document.getElementById("wallBox").style.display = "block";
             
-            // 管理员才显示面板，普通用户隐藏
             if(isAdmin){
                 document.getElementById("adminPanel").style.display = "block";
                 renderUserList();
@@ -197,7 +197,7 @@
             if(userList.some(x=>x.name===u)){alert("账号已存在");return;}
             userList.push({name:u,pwd:p,admin:false});
             saveUser();
-            alert("添加成功");
+            alert("添加成功，可以直接登录");
             document.getElementById("newU").value="";
             document.getElementById("newP").value="";
             renderUserList();
