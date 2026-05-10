@@ -20,44 +20,21 @@
         .admin-panel input {padding:8px;margin:5px;border:1px solid #ddd;border-radius:4px;}
         .admin-panel button {padding:8px 15px;background:#67c23a;color:#fff;border:none;border-radius:4px;cursor:pointer;margin:5px;}
         .user-list-item {padding:8px;background:#f8f9fa;margin:5px 0;border-radius:4px;}
-
-        /* 留言卡片样式 */
-        .msg-item {
-            background:#fff;
-            padding:15px;
-            border-radius:8px;
-            margin-bottom:15px;
-            box-shadow:0 1px 5px #ddd;
-        }
-        .msg-info {
-            font-size:14px;
-            color:#666;
-            margin-bottom:8px;
-            border-bottom:1px solid #eee;
-            padding-bottom:5px;
-        }
-        .msg-content {
-            font-size:16px;
-            color:#333;
-        }
+        .msg-item {background:#fff;padding:15px;border-radius:8px;margin-bottom:15px;box-shadow:0 1px 5px #ddd;}
+        .msg-info {font-size:14px;color:#666;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:5px;}
+        .msg-content {font-size:16px;color:#333;}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>留言墙</h1>
-
-        <!-- 登录框 -->
         <div class="login-box" id="loginBox">
             <input type="text" id="username" placeholder="请输入账号">
             <input type="password" id="pwd" placeholder="请输入密码">
             <button onclick="login()">登录</button>
         </div>
-
-        <!-- 主界面 -->
         <div class="wall-wrap" id="wallBox">
             <button class="logout-btn" onclick="logout()">退出登录</button>
-
-            <!-- 管理员面板 -->
             <div class="admin-panel" id="adminPanel">
                 <h3>🔧 管理员账户管理</h3>
                 <div>
@@ -73,20 +50,15 @@
                 </div>
                 <div id="userListShow" style="margin-top:15px"></div>
             </div>
-
-            <!-- 留言输入 -->
             <div class="input-box">
                 <textarea id="content" placeholder="在这里写下你的留言..."></textarea>
                 <button class="send-btn" onclick="addMsg()">提交留言</button>
             </div>
-
-            <!-- 留言列表 -->
             <div id="msgList"></div>
         </div>
     </div>
 
     <script>
-        // 加密密钥
         const KEY = "CBYSecret2026";
         function encodePwd(str){
             let res = "";
@@ -108,17 +80,20 @@
             }
         }
 
-        // 初始化管理员账号 CBY314 / CBY888123
+        // 修复：只在第一次打开时创建管理员，以后不再覆盖
         function initAdmin(){
-            let initList = [
-                {name:"CBY314", pwd:encodePwd("CBY888123"), isAdmin:true}
-            ];
-            localStorage.setItem("userData", JSON.stringify(initList));
+            let saveUser = localStorage.getItem("userData");
+            if(!saveUser){
+                let initList = [
+                    {name:"CBY314", pwd:encodePwd("CBY888123"), isAdmin:true}
+                ];
+                localStorage.setItem("userData", JSON.stringify(initList));
+            }
         }
 
         let msgArr = [];
         let currentIsAdmin = false;
-        let loginUserName = ""; // 记录当前登录用户名
+        let loginUserName = "";
 
         window.onload = function(){
             initAdmin();
@@ -133,7 +108,6 @@
             localStorage.setItem("userData", JSON.stringify(list));
         }
 
-        // 获取当前时间字符串
         function getNowTime(){
             let d = new Date();
             let y = d.getFullYear();
@@ -158,7 +132,7 @@
                 return;
             }
             currentIsAdmin = !!find.isAdmin;
-            loginUserName = un; // 记录登录人
+            loginUserName = un;
             showWall();
             if(currentIsAdmin){
                 document.getElementById("adminPanel").style.display = "block";
@@ -182,7 +156,6 @@
             document.getElementById("wallBox").style.display = "block";
         }
 
-        // 管理员添加账号
         function addNewUser(){
             let un = document.getElementById("newUser").value.trim();
             let pd = document.getElementById("newPwd").value.trim();
@@ -197,7 +170,6 @@
             renderUserList();
         }
 
-        // 管理员修改密码
         function modifyUserPwd(){
             let un = document.getElementById("editUser").value.trim();
             let newPd = document.getElementById("editNewPwd").value.trim();
@@ -212,7 +184,6 @@
             renderUserList();
         }
 
-        // 管理员删除账号
         function delUser(){
             let un = document.getElementById("editUser").value.trim();
             if(!un){alert("请输入要删除的账号");return;}
@@ -236,18 +207,15 @@
             document.getElementById("userListShow").innerHTML = html;
         }
 
-        // 加载留言
         function loadMsg(){
             let old = localStorage.getItem('liuyanData');
             if(old) msgArr = JSON.parse(old);
             renderMsg();
         }
 
-        // 渲染留言：显示发布人 + 时间 + 内容
         function renderMsg(){
             let box = document.getElementById('msgList');
             box.innerHTML = "";
-            // 倒序，最新在最上面
             for(let i = msgArr.length - 1; i >= 0; i--){
                 let item = msgArr[i];
                 let div = document.createElement('div');
@@ -260,11 +228,9 @@
             }
         }
 
-        // 提交留言，带上用户名和时间
         function addMsg(){
             let text = document.getElementById('content').value.trim();
             if(text === ""){alert('留言不能为空！');return;}
-
             let msgObj = {
                 user: loginUserName,
                 time: getNowTime(),
