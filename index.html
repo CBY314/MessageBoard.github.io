@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>简易留言墙</title>
+    <title>留言墙</title>
     <style>
         * {
             margin: 0;
@@ -65,37 +65,59 @@
     <div class="container">
         <h1>我的留言墙</h1>
 
-        <!-- 留言输入区域 -->
         <div class="input-box">
             <textarea id="content" placeholder="在这里写下你的留言..."></textarea>
             <button onclick="addMsg()">提交留言</button>
         </div>
 
-        <!-- 留言展示区域 -->
         <div id="msgList"></div>
     </div>
 
     <script>
-        // 提交留言
+        // 存留言的数组
+        let msgArr = [];
+
+        // 页面打开时读取本地保存的留言
+        function loadMsg() {
+            let old = localStorage.getItem('liuyanData');
+            if(old) {
+                msgArr = JSON.parse(old);
+            }
+            renderMsg();
+        }
+
+        // 渲染所有留言
+        function renderMsg() {
+            let box = document.getElementById('msgList');
+            box.innerHTML = "";
+            // 倒序显示，最新的在最上面
+            for(let i = msgArr.length - 1; i >= 0; i--){
+                let div = document.createElement('div');
+                div.className = 'msg-item';
+                div.innerText = msgArr[i];
+                box.appendChild(div);
+            }
+        }
+
+        // 添加新留言
         function addMsg() {
-            // 获取输入框内容
             let text = document.getElementById('content').value.trim();
             if (text === "") {
                 alert('留言不能为空！');
                 return;
             }
-
-            // 创建一条留言标签
-            let msgDiv = document.createElement('div');
-            msgDiv.className = 'msg-item';
-            msgDiv.innerText = text;
-
-            // 添加到留言列表最前面
-            document.getElementById('msgList').prepend(msgDiv);
-
+            // 加入数组
+            msgArr.push(text);
+            // 保存到本地
+            localStorage.setItem('liuyanData', JSON.stringify(msgArr));
+            // 重新渲染
+            renderMsg();
             // 清空输入框
             document.getElementById('content').value = "";
         }
+
+        // 页面加载自动读取留言
+        loadMsg();
     </script>
 </body>
 </html>
