@@ -4,128 +4,41 @@
     <meta charset="UTF-8">
     <title>留言墙</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "微软雅黑", sans-serif;
-        }
-        body {
-            background-color: #f0f4f8;
-            padding: 30px;
-        }
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            color: #222;
-            margin-bottom: 30px;
-        }
-        .login-box {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px #ccc;
-            margin: 50px auto;
-            max-width: 400px;
-        }
-        .login-box input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border:.1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-        .login-box button {
-            width: 100%;
-            padding: 12px;
-            background: #409eff;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .input-box {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px #ccc;
-            margin-bottom: 20px;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            resize: none;
-        }
-        .send-btn {
-            margin-top: 15px;
-            padding: 10px 30px;
-            background: #409eff;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+        * {margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑",sans-serif;}
+        body {background:#f0f4f8;padding:30px;}
+        .container {max-width:700px;margin:0 auto;}
+        h1 {text-align:center;color:#222;margin-bottom:30px;}
+        .login-box {background:#fff;padding:30px;border-radius:10px;box-shadow:0 2px 8px #ccc;margin:50px auto;max-width:400px;}
+        .login-box input {width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:6px;font-size:16px;}
+        .login-box button {width:100%;padding:12px;background:#409eff;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;margin-top:10px;}
+        .input-box {background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px #ccc;margin-bottom:20px;}
+        textarea {width:100%;height:100px;padding:15px;border:1px solid #ddd;border-radius:6px;font-size:16px;resize:none;}
+        .send-btn {margin-top:15px;padding:10px 30px;background:#409eff;color:#fff;border:none;border-radius:6px;cursor:pointer;}
+        .wall-wrap {display:none;}
+        .logout-btn {margin-bottom:20px;padding:8px 20px;background:#f56c6c;color:#fff;border:none;border-radius:6px;cursor:pointer;}
+        .admin-panel {background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px #ccc;margin-bottom:20px;display:none;}
+        .admin-panel input {padding:8px;margin:5px;border:1px solid #ddd;border-radius:4px;}
+        .admin-panel button {padding:8px 15px;background:#67c23a;color:#fff;border:none;border-radius:4px;cursor:pointer;margin:5px;}
+        .user-list-item {padding:8px;background:#f8f9fa;margin:5px 0;border-radius:4px;}
+
+        /* 留言卡片样式 */
         .msg-item {
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 1px 5px #ddd;
+            background:#fff;
+            padding:15px;
+            border-radius:8px;
+            margin-bottom:15px;
+            box-shadow:0 1px 5px #ddd;
         }
-        .wall-wrap {
-            display: none;
+        .msg-info {
+            font-size:14px;
+            color:#666;
+            margin-bottom:8px;
+            border-bottom:1px solid #eee;
+            padding-bottom:5px;
         }
-        .logout-btn {
-            margin-bottom: 20px;
-            padding: 8px 20px;
-            background: #f56c6c;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        /* 管理员面板样式 */
-        .admin-panel {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px #ccc;
-            margin-bottom: 20px;
-            display: none;
-        }
-        .admin-panel input {
-            padding: 8px;
-            margin: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .admin-panel button {
-            padding: 8px 15px;
-            background: #67c23a;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        .user-list-item {
-            padding: 8px;
-            background: #f8f9fa;
-            margin: 5px 0;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .msg-content {
+            font-size:16px;
+            color:#333;
         }
     </style>
 </head>
@@ -173,7 +86,7 @@
     </div>
 
     <script>
-        // 简单加密解密（防F12直接看明文）
+        // 加密密钥
         const KEY = "CBYSecret2026";
         function encodePwd(str){
             let res = "";
@@ -183,45 +96,54 @@
             return btoa(res);
         }
         function decodePwd(str){
-            let res = atob(str);
-            let out = "";
-            for(let i=0;i<res.length;i++){
-                out += String.fromCharCode(res.charCodeAt(i) ^ KEY.charCodeAt(i%KEY.length));
+            try{
+                let res = atob(str);
+                let out = "";
+                for(let i=0;i<res.length;i++){
+                    out += String.fromCharCode(res.charCodeAt(i) ^ KEY.charCodeAt(i%KEY.length));
+                }
+                return out;
+            }catch(e){
+                return "";
             }
-            return out;
         }
 
         // 初始化管理员账号 CBY314 / CBY888123
         function initAdmin(){
-            let saveUser = localStorage.getItem("userData");
-            if(!saveUser){
-                let initList = [
-                    {name:"CBY314", pwd:encodePwd("CBY888123"), isAdmin:true}
-                ];
-                localStorage.setItem("userData", JSON.stringify(initList));
-            }
+            let initList = [
+                {name:"CBY314", pwd:encodePwd("CBY888123"), isAdmin:true}
+            ];
+            localStorage.setItem("userData", JSON.stringify(initList));
         }
 
         let msgArr = [];
         let currentIsAdmin = false;
+        let loginUserName = ""; // 记录当前登录用户名
 
-        // 页面打开强制重新登录
         window.onload = function(){
             initAdmin();
             localStorage.removeItem("isLogin");
             loadMsg();
         }
 
-        // 获取所有用户
         function getUserList(){
             return JSON.parse(localStorage.getItem("userData")) || [];
         }
-        // 保存用户列表
         function saveUserList(list){
             localStorage.setItem("userData", JSON.stringify(list));
         }
 
-        // 登录
+        // 获取当前时间字符串
+        function getNowTime(){
+            let d = new Date();
+            let y = d.getFullYear();
+            let m = d.getMonth() + 1;
+            let day = d.getDate();
+            let h = d.getHours();
+            let min = d.getMinutes();
+            return `${y}-${m}-${day} ${h}:${min}`;
+        }
+
         function login(){
             let un = document.getElementById("username").value.trim();
             let pd = document.getElementById("pwd").value.trim();
@@ -236,15 +158,14 @@
                 return;
             }
             currentIsAdmin = !!find.isAdmin;
+            loginUserName = un; // 记录登录人
             showWall();
-            // 管理员显示管理面板
             if(currentIsAdmin){
                 document.getElementById("adminPanel").style.display = "block";
                 renderUserList();
             }
         }
 
-        // 退出登录
         function logout(){
             localStorage.removeItem("isLogin");
             document.getElementById("wallBox").style.display = "none";
@@ -253,6 +174,7 @@
             document.getElementById("pwd").value = "";
             document.getElementById("adminPanel").style.display = "none";
             currentIsAdmin = false;
+            loginUserName = "";
         }
 
         function showWall(){
@@ -260,19 +182,13 @@
             document.getElementById("wallBox").style.display = "block";
         }
 
-        // 管理员：添加账号
+        // 管理员添加账号
         function addNewUser(){
             let un = document.getElementById("newUser").value.trim();
             let pd = document.getElementById("newPwd").value.trim();
-            if(!un || !pd){
-                alert("账号和密码不能为空");
-                return;
-            }
+            if(!un || !pd){alert("账号和密码不能为空");return;}
             let list = getUserList();
-            if(list.find(x=>x.name===un)){
-                alert("账号已存在");
-                return;
-            }
+            if(list.find(x=>x.name===un)){alert("账号已存在");return;}
             list.push({name:un, pwd:encodePwd(pd), isAdmin:false});
             saveUserList(list);
             alert("添加成功");
@@ -281,47 +197,29 @@
             renderUserList();
         }
 
-        // 管理员：修改密码
+        // 管理员修改密码
         function modifyUserPwd(){
             let un = document.getElementById("editUser").value.trim();
             let newPd = document.getElementById("editNewPwd").value.trim();
-            if(!un || !newPd){
-                alert("请输入账号和新密码");
-                return;
-            }
+            if(!un || !newPd){alert("请输入账号和新密码");return;}
             let list = getUserList();
             let item = list.find(x=>x.name===un);
-            if(!item){
-                alert("账号不存在");
-                return;
-            }
-            if(item.isAdmin){
-                alert("管理员账号禁止在此修改");
-                return;
-            }
+            if(!item){alert("账号不存在");return;}
+            if(item.isAdmin){alert("管理员账号禁止在此修改");return;}
             item.pwd = encodePwd(newPd);
             saveUserList(list);
             alert("修改成功");
             renderUserList();
         }
 
-        // 管理员：删除账号
+        // 管理员删除账号
         function delUser(){
             let un = document.getElementById("editUser").value.trim();
-            if(!un){
-                alert("请输入要删除的账号");
-                return;
-            }
+            if(!un){alert("请输入要删除的账号");return;}
             let list = getUserList();
             let item = list.find(x=>x.name===un);
-            if(!item){
-                alert("账号不存在");
-                return;
-            }
-            if(item.isAdmin){
-                alert("管理员账号不能删除");
-                return;
-            }
+            if(!item){alert("账号不存在");return;}
+            if(item.isAdmin){alert("管理员账号不能删除");return;}
             if(!confirm("确定要删除该账号吗？")) return;
             list = list.filter(x=>x.name!==un);
             saveUserList(list);
@@ -329,43 +227,50 @@
             renderUserList();
         }
 
-        // 渲染账号列表
         function renderUserList(){
             let list = getUserList();
             let html = "<h4>已有账号列表：</h4>";
             list.forEach(item=>{
-                html += `<div class="user-list-item">
-                    <span>账号：${item.name} ${item.isAdmin?'【管理员】':''}</span>
-                </div>`;
+                html += `<div class="user-list-item">账号：${item.name} ${item.isAdmin?'【管理员】':''}</div>`;
             });
             document.getElementById("userListShow").innerHTML = html;
         }
 
-        // 留言相关
-        function loadMsg() {
+        // 加载留言
+        function loadMsg(){
             let old = localStorage.getItem('liuyanData');
-            if(old) {
-                msgArr = JSON.parse(old);
-            }
+            if(old) msgArr = JSON.parse(old);
             renderMsg();
         }
-        function renderMsg() {
+
+        // 渲染留言：显示发布人 + 时间 + 内容
+        function renderMsg(){
             let box = document.getElementById('msgList');
             box.innerHTML = "";
+            // 倒序，最新在最上面
             for(let i = msgArr.length - 1; i >= 0; i--){
+                let item = msgArr[i];
                 let div = document.createElement('div');
                 div.className = 'msg-item';
-                div.innerText = msgArr[i];
+                div.innerHTML = `
+                    <div class="msg-info">发布人：${item.user} &nbsp;&nbsp; 时间：${item.time}</div>
+                    <div class="msg-content">${item.content}</div>
+                `;
                 box.appendChild(div);
             }
         }
-        function addMsg() {
+
+        // 提交留言，带上用户名和时间
+        function addMsg(){
             let text = document.getElementById('content').value.trim();
-            if (text === "") {
-                alert('留言不能为空！');
-                return;
-            }
-            msgArr.push(text);
+            if(text === ""){alert('留言不能为空！');return;}
+
+            let msgObj = {
+                user: loginUserName,
+                time: getNowTime(),
+                content: text
+            };
+            msgArr.push(msgObj);
             localStorage.setItem('liuyanData', JSON.stringify(msgArr));
             renderMsg();
             document.getElementById('content').value = "";
