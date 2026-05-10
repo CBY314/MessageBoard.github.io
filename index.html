@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>留言墙</title>
+    <title>登录版留言墙</title>
     <style>
         * {
             margin: 0;
@@ -23,6 +23,37 @@
             color: #222;
             margin-bottom: 30px;
         }
+
+        /* 登录框样式 */
+        .login-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #ccc;
+            margin: 50px auto;
+            max-width: 400px;
+        }
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: #409eff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* 留言区域 */
         .input-box {
             background: #fff;
             padding: 20px;
@@ -39,7 +70,7 @@
             font-size: 16px;
             resize: none;
         }
-        button {
+        .send-btn {
             margin-top: 15px;
             padding: 10px 30px;
             background: #409eff;
@@ -49,9 +80,6 @@
             font-size: 16px;
             cursor: pointer;
         }
-        button:hover {
-            background: #337ecc;
-        }
         .msg-item {
             background: #fff;
             padding: 15px;
@@ -59,25 +87,70 @@
             margin-bottom: 15px;
             box-shadow: 0 1px 5px #ddd;
         }
+        /* 默认隐藏留言区 */
+        .wall-wrap {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>我的留言墙</h1>
+        <h1>留言墙系统</h1>
 
-        <div class="input-box">
-            <textarea id="content" placeholder="在这里写下你的留言..."></textarea>
-            <button onclick="addMsg()">提交留言</button>
+        <!-- 登录界面 -->
+        <div class="login-box" id="loginBox">
+            <input type="text" id="username" placeholder="请输入账号">
+            <input type="password" id="pwd" placeholder="请输入密码">
+            <button onclick="login()">登录</button>
         </div>
 
-        <div id="msgList"></div>
+        <!-- 留言墙界面（登录后才显示） -->
+        <div class="wall-wrap" id="wallBox">
+            <div class="input-box">
+                <textarea id="content" placeholder="在这里写下你的留言..."></textarea>
+                <button class="send-btn" onclick="addMsg()">提交留言</button>
+            </div>
+            <div id="msgList"></div>
+        </div>
     </div>
 
     <script>
-        // 存留言的数组
+        // ========== 在这里改账号密码 ==========
+        const USER = "admin";   // 账号
+        const PWD  = "123456";  // 密码
+
         let msgArr = [];
 
-        // 页面打开时读取本地保存的留言
+        // 页面打开先判断是否已登录
+        window.onload = function(){
+            let isLogin = localStorage.getItem("isLogin");
+            if(isLogin === "yes"){
+                showWall();
+            }
+            loadMsg();
+        }
+
+        // 登录验证
+        function login(){
+            let un = document.getElementById("username").value.trim();
+            let pd = document.getElementById("pwd").value.trim();
+
+            if(un === USER && pd === PWD){
+                // 标记已登录
+                localStorage.setItem("isLogin","yes");
+                showWall();
+            }else{
+                alert("账号或密码错误！");
+            }
+        }
+
+        // 显示留言墙、隐藏登录框
+        function showWall(){
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("wallBox").style.display = "block";
+        }
+
+        // 加载留言
         function loadMsg() {
             let old = localStorage.getItem('liuyanData');
             if(old) {
@@ -86,11 +159,10 @@
             renderMsg();
         }
 
-        // 渲染所有留言
+        // 渲染留言
         function renderMsg() {
             let box = document.getElementById('msgList');
             box.innerHTML = "";
-            // 倒序显示，最新的在最上面
             for(let i = msgArr.length - 1; i >= 0; i--){
                 let div = document.createElement('div');
                 div.className = 'msg-item';
@@ -99,25 +171,18 @@
             }
         }
 
-        // 添加新留言
+        // 添加留言
         function addMsg() {
             let text = document.getElementById('content').value.trim();
             if (text === "") {
                 alert('留言不能为空！');
                 return;
             }
-            // 加入数组
             msgArr.push(text);
-            // 保存到本地
             localStorage.setItem('liuyanData', JSON.stringify(msgArr));
-            // 重新渲染
             renderMsg();
-            // 清空输入框
             document.getElementById('content').value = "";
         }
-
-        // 页面加载自动读取留言
-        loadMsg();
     </script>
 </body>
 </html>
