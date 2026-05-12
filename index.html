@@ -81,13 +81,13 @@
             letter-spacing: 2px;
         }
 
-        .notice-bar{
-            background:#52c41a;
-            color:#fff;
-            padding:14px;
+        .msg-notice{
+            background:#e7f5ff;
+            color:#1989fa;
+            padding:15px;
             border-radius:12px;
             text-align:center;
-            font-size:17px;
+            font-size:16px;
             margin-bottom:20px;
             display:none;
         }
@@ -141,6 +141,12 @@
             border-radius: 10px;
             font-size: 16px;
             background: #f8fafc;
+            transition: all 0.3s;
+        }
+        .login-box input:focus {
+            outline: none;
+            border-color: #409eff;
+            background: #fff;
         }
         .login-box button {
             width: 100%;
@@ -151,9 +157,17 @@
             border-radius: 10px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        .login-box button:hover {
+            opacity: 0.92;
+            transform: translateY(-2px);
         }
 
-        .wall-wrap { display: none; }
+        .wall-wrap {
+            display: none;
+        }
         .logout-btn {
             padding: 10px 24px;
             background: linear-gradient(135deg, #f56c6c, #ee5555);
@@ -163,6 +177,11 @@
             cursor: pointer;
             margin-bottom: 25px;
             font-size: 15px;
+            transition: 0.3s;
+        }
+        .logout-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
         }
 
         .admin-panel {
@@ -173,9 +192,14 @@
             margin-bottom: 25px;
             display: none;
         }
-        .admin-panel h3, .admin-panel h4 {
+        .admin-panel h3 {
             color: #2c3e50;
             margin-bottom: 15px;
+        }
+        .admin-panel h4 {
+            color: #666;
+            margin: 10px 0 8px;
+            font-size: 15px;
         }
         .admin-panel input {
             padding: 10px 12px;
@@ -193,17 +217,29 @@
             border-radius: 8px;
             cursor: pointer;
             margin: 4px;
+            transition: 0.3s;
+        }
+        .admin-panel button:hover {
+            opacity: 0.9;
         }
         .admin-del {
             background: linear-gradient(135deg, #f56c6c, #ee5555) !important;
         }
-        .user-item,.apply-item{
+        .user-item {
+            padding: 12px 15px;
+            background: #f8fafc;
+            margin: 8px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            color: #333;
+        }
+        .apply-item{
             padding:12px 15px;
-            background:#f8fafc;
+            background:#fff5e6;
             margin:8px 0;
             border-radius:10px;
         }
-        .apply-item{ background:#fff5e6; }
         .admin-set {
             margin-top: 18px;
             padding-top: 18px;
@@ -226,6 +262,12 @@
             resize: none;
             font-size: 16px;
             background: #f8fafc;
+            transition: 0.3s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #409eff;
+            background: #fff;
         }
         .send-btn {
             margin-top: 18px;
@@ -236,6 +278,11 @@
             border-radius: 10px;
             cursor: pointer;
             font-size: 16px;
+            transition: 0.3s;
+        }
+        .send-btn:hover {
+            opacity: 0.92;
+            transform: translateY(-2px);
         }
 
         .msg-item {
@@ -244,6 +291,11 @@
             border-radius: 16px;
             margin-bottom: 18px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+        .msg-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         }
         .msg-top {
             border-left: 5px solid #ff6b6b;
@@ -269,10 +321,20 @@
             cursor: pointer;
             margin: 3px;
             font-size: 13px;
+            transition: 0.3s;
         }
-        .del-msg-btn { background: #f56c6c; color: #fff; }
-        .top-btn { background: #ff9f43; color: #fff; }
-        .move-btn { background: #409eff; color: #fff; }
+        .del-msg-btn {
+            background: linear-gradient(135deg, #f56c6c, #ee5555);
+            color: #fff;
+        }
+        .top-btn {
+            background: linear-gradient(135deg, #ff9f43, #ff7e29);
+            color: #fff;
+        }
+        .move-btn {
+            background: linear-gradient(135deg, #409eff, #2b8def);
+            color: #fff;
+        }
     </style>
 </head>
 <body class="style1">
@@ -288,8 +350,8 @@
 <div class="container">
     <h1>✨ 留言墙 ✨</h1>
 
-    <div class="notice-bar" id="noticeBar">
-        🎉 你的账号申请已通过，可以直接登录！
+    <div class="msg-notice" id="msgNotice">
+        🎉 你的账号申请已通过！现在可以直接登录了
     </div>
 
     <div class="login-box" id="loginBox">
@@ -320,18 +382,18 @@
                 <input type="text" id="newAdminName" placeholder="输入新管理员名称">
                 <button onclick="changeAdminName()">确认修改</button>
             </div>
-            <div>
+            <div style="margin-top:15px;">
                 <input type="text" id="newU" placeholder="新增账号">
                 <input type="password" id="newP" placeholder="密码">
                 <button onclick="addUser()">添加账号</button>
             </div>
-            <div>
+            <div style="margin-top:10px;">
                 <input type="text" id="editU" placeholder="操作账号">
                 <input type="password" id="editP" placeholder="新密码">
                 <button onclick="modifyUser()">修改密码</button>
                 <button onclick="removeUser()" class="admin-del">删除账号</button>
             </div>
-            <div id="userListShow"></div>
+            <div id="userListShow" style="margin-top:15px;"></div>
         </div>
 
         <div class="input-box">
@@ -349,14 +411,29 @@
     let applyList = [];
     let isAdmin = false;
     let nowLoginUser = "";
+    let checkTimer = null;
 
     window.onload = function(){
         initData();
         loadMsg();
         loadApply();
         loadBg();
-        checkNotice();
-        setInterval(checkNotice, 1500);
+        checkApplyPass();
+        checkTimer = setInterval(checkApplyPass, 2000);
+    }
+
+    function checkApplyPass(){
+        let myApplyName = localStorage.getItem("myApplyName");
+        if(!myApplyName) return;
+        let passArr = JSON.parse(localStorage.getItem("passApplyList") || "[]");
+        if(passArr.includes(myApplyName)){
+            document.getElementById("msgNotice").style.display = "block";
+            localStorage.removeItem("myApplyName");
+            let idx = passArr.indexOf(myApplyName);
+            passArr.splice(idx,1);
+            localStorage.setItem("passApplyList", JSON.stringify(passArr));
+            clearInterval(checkTimer);
+        }
     }
 
     function setBg(cname){
@@ -376,7 +453,6 @@
         localStorage.setItem("applyList", JSON.stringify(applyList));
     }
 
-    // 提交申请
     function submitApply(){
         let name = document.getElementById("applyName").value.trim();
         let pwd = document.getElementById("applyPwd").value.trim();
@@ -394,29 +470,46 @@
         }
         applyList.push({name, pwd});
         saveApply();
+        localStorage.setItem("myApplyName", name);
         alert("申请提交成功！请等待管理员审核通过后登录");
         document.getElementById("applyName").value = "";
         document.getElementById("applyPwd").value = "";
     }
 
-    // 检测全局通过通知
-    function checkNotice(){
-        let passName = localStorage.getItem("passApplyName");
-        if(passName){
-            document.getElementById("noticeBar").style.display = "block";
-        }else{
-            document.getElementById("noticeBar").style.display = "none";
+    function renderApplyList(){
+        let box = document.getElementById("applyListShow");
+        if(applyList.length === 0){
+            box.innerHTML = "<div style='padding:8px;color:#999;'>暂无新的注册申请</div>";
+            return;
         }
+        let html = "";
+        applyList.forEach((item, idx)=>{
+            html += `
+            <div class="apply-item">
+                <div>申请账号：${item.name}</div>
+                <div>申请密码：${item.pwd}</div>
+                <div style="margin-top:5px;">
+                    <button onclick="passApply(${idx})">同意创建</button>
+                    <button onclick="refuseApply(${idx})" class="admin-del">拒绝</button>
+                </div>
+            </div>
+            `;
+        });
+        box.innerHTML = html;
     }
 
-    // 管理员同意
     function passApply(idx){
         let item = applyList[idx];
-        userList.push({name:item.name, pwd:item.pwd, admin:false});
+        userList.push({
+            name: item.name,
+            pwd: item.pwd,
+            admin: false
+        });
         saveUser();
 
-        // 全局写入通过通知
-        localStorage.setItem("passApplyName", item.name);
+        let passArr = JSON.parse(localStorage.getItem("passApplyList") || "[]");
+        passArr.push(item.name);
+        localStorage.setItem("passApplyList", JSON.stringify(passArr));
 
         applyList.splice(idx,1);
         saveApply();
@@ -438,10 +531,15 @@
         if(old){
             userList = JSON.parse(old);
         }else{
-            userList = [{name:"CBY",pwd:"CBY888123",admin:true}];
+            userList = [{
+                name: "CBY",
+                pwd: "CBY888123",
+                admin: true
+            }];
             localStorage.setItem("userList", JSON.stringify(userList));
         }
     }
+
     function saveUser(){
         localStorage.setItem("userList", JSON.stringify(userList));
     }
@@ -453,8 +551,6 @@
             if(userList[i].name === u && userList[i].pwd === p){
                 isAdmin = userList[i].admin;
                 nowLoginUser = u;
-                // 登录成功清除通知
-                localStorage.removeItem("passApplyName");
                 goHome();
                 return;
             }
@@ -542,28 +638,6 @@
         document.getElementById("userListShow").innerHTML=html;
     }
 
-    function renderApplyList(){
-        let box = document.getElementById("applyListShow");
-        if(applyList.length === 0){
-            box.innerHTML = "<div style='padding:8px;color:#999;'>暂无新的注册申请</div>";
-            return;
-        }
-        let html = "";
-        applyList.forEach((item, idx)=>{
-            html += `
-            <div class="apply-item">
-                <div>申请账号：${item.name}</div>
-                <div>申请密码：${item.pwd}</div>
-                <div style="margin-top:5px;">
-                    <button onclick="passApply(${idx})">同意创建</button>
-                    <button onclick="refuseApply(${idx})" class="admin-del">拒绝</button>
-                </div>
-            </div>
-            `;
-        });
-        box.innerHTML = html;
-    }
-
     function getTime(){
         let d=new Date();
         return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}`;
@@ -586,7 +660,6 @@
         document.getElementById("msgTxt").value="";
     }
 
-    // 恢复置顶、上移、下移
     function toggleTop(idx){
         msgList[idx].isTop = !msgList[idx].isTop;
         if(msgList[idx].isTop){
