@@ -82,12 +82,46 @@
             letter-spacing: 2px;
         }
 
+        /* 申请注册面板 */
+        .apply-box{
+            background:#fff;
+            padding:25px;
+            border-radius:16px;
+            box-shadow:0 8px 30px rgba(0,0,0,0.08);
+            margin:20px auto;
+            max-width:420px;
+        }
+        .apply-box h3{
+            margin-bottom:15px;
+            color:#2c3e50;
+        }
+        .apply-box input{
+            width:100%;
+            padding:12px 16px;
+            margin:8px 0;
+            border:1px solid #e1e7f0;
+            border-radius:10px;
+            font-size:16px;
+            background:#f8fafc;
+        }
+        .apply-box button{
+            width:100%;
+            padding:12px;
+            background:linear-gradient(135deg,#67c23a,#58b02b);
+            color:#fff;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            margin-top:8px;
+            font-size:16px;
+        }
+
         .login-box {
             background: #ffffff;
             padding: 35px;
             border-radius: 16px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            margin: 60px auto;
+            margin: 60px auto 20px;
             max-width: 420px;
         }
         .login-box input {
@@ -190,6 +224,12 @@
             display: flex;
             justify-content: space-between;
             color: #333;
+        }
+        .apply-item{
+            padding:12px 15px;
+            background:#fff5e6;
+            margin:8px 0;
+            border-radius:10px;
         }
         .admin-set {
             margin-top: 18px;
@@ -302,10 +342,19 @@
 <div class="container">
     <h1>✨ 留言墙 ✨</h1>
 
+    <!-- 登录框 -->
     <div class="login-box" id="loginBox">
         <input type="text" id="inpUser" placeholder="请输入账号">
         <input type="password" id="inpPwd" placeholder="请输入密码">
         <button onclick="login()">立即登录</button>
+    </div>
+
+    <!-- 申请注册框 -->
+    <div class="apply-box" id="applyBox">
+        <h3>📝 申请注册账号</h3>
+        <input type="text" id="applyName" placeholder="想要申请的账号名">
+        <input type="password" id="applyPwd" placeholder="设置登录密码">
+        <button onclick="submitApply()">提交申请，等待管理员审核</button>
     </div>
 
     <div class="wall-wrap" id="wallBox">
@@ -313,6 +362,13 @@
 
         <div class="admin-panel" id="adminPanel">
             <h3>⚙️ 管理员管理中心</h3>
+
+            <!-- 账号申请审核区域 -->
+            <div class="admin-set">
+                <h4>📩 账号注册申请审核</h4>
+                <div id="applyListShow"></div>
+            </div>
+
             <div class="admin-set">
                 <h4>修改管理员账号名</h4>
                 <input type="text" id="newAdminName" placeholder="输入新管理员名称">
@@ -344,12 +400,14 @@
 <script>
     let userList = [];
     let msgList = [];
+    let applyList = []; // 账号申请列表
     let isAdmin = false;
     let nowLoginUser = "";
 
     window.onload = function(){
         initData();
         loadMsg();
+        loadApply();
         loadBg();
     }
 
@@ -361,6 +419,89 @@
     function loadBg(){
         let bg = localStorage.getItem("bgStyle");
         if(bg) document.body.className = bg;
+    }
+
+    // 账号申请本地存储
+    function loadApply(){
+        let old = localStorage.getItem("applyList");
+        if(old) applyList = JSON.parse(old);
+    }
+    function saveApply(){
+        localStorage.setItem("applyList", JSON.stringify(applyList));
+    }
+
+    // 提交注册申请
+    function submitApply(){
+        let name = document.getElementById("applyName").value.trim();
+        let pwd = document.getElementById("applyPwd").value.trim();
+        if(!name || !pwd){
+            alert("账号和密码不能为空");
+            return;
+        }
+        // 已存在账号
+        if(userList.some(x=>x.name===name)){
+            alert("该账号已存在，无需申请");
+            return;
+        }
+        // 已申请过
+        if(applyList.some(x=>x.name===name)){
+            alert("你已提交过该账号申请，请等待管理员审核");
+            return;
+        }
+        applyList.push({name, pwd});
+        saveApply();
+        alert("申请提交成功！请等待管理员审核通过后登录");
+        document.getElementById("applyName").value = "";
+        document.getElementById("applyPwd").value = "";
+    }
+
+    // 管理员渲染申请列表
+    function renderApplyList(){
+        let box = document.getElementById("applyListShow");
+        if(applyList.length === 0){
+            box.innerHTML = "<div style='padding:8px;color:#999;'>暂无新的注册申请</div>";
+            return;
+        }
+        let html = "";
+        applyList.forEach((item, idx)=>{
+            html += `
+            <div class="apply-item">
+                <div>申请账号：${item.name}</div>
+                <div>申请密码：${item.pwd}</div>
+                <div style="margin-top:5px;">
+                    <button onclick="passApply(${idx})">同意创建</button>
+                    <button onclick="refuseApply(${idx})" class="admin-del">拒绝</button>
+                </div>
+            </div>
+            `;
+        });
+        box.innerHTML = html;
+    }
+
+    // 同意申请，自动创建普通账号
+    function passApply(idx){
+        let item = applyList[idx];
+        userList.push({
+            name: item.name,
+            pwd: item.pwd,
+            admin: false
+        });
+        saveUser();
+        // 移除申请
+        applyList.splice(idx,1);
+        saveApply();
+        alert(`已同意！账号【${item.name}】创建成功，可直接登录`);
+        renderApplyList();
+        renderUserList();
+    }
+
+    // 拒绝申请
+    function refuseApply(idx){
+        if(!confirm("确定拒绝该注册申请？")) return;
+        applyList.splice(idx,1);
+        saveApply();
+        alert("已拒绝该申请");
+        renderApplyList();
     }
 
     function initData(){
@@ -397,10 +538,12 @@
 
     function goHome(){
         document.getElementById("loginBox").style.display = "none";
+        document.getElementById("applyBox").style.display = "none";
         document.getElementById("wallBox").style.display = "block";
         if(isAdmin){
             document.getElementById("adminPanel").style.display = "block";
             renderUserList();
+            renderApplyList();
         }else{
             document.getElementById("adminPanel").style.display = "none";
         }
