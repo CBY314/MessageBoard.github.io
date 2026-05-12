@@ -586,13 +586,51 @@
         document.getElementById("msgTxt").value="";
     }
 
+    // 恢复置顶、上移、下移
     function toggleTop(idx){
         msgList[idx].isTop = !msgList[idx].isTop;
+        if(msgList[idx].isTop){
+            let topArr = msgList.filter(m=>m.isTop);
+            msgList[idx].topOrder = topArr.length;
+        }else{
+            msgList[idx].topOrder = 0;
+        }
         saveMsg();
         renderMsg();
     }
-    function moveUp(idx){ }
-    function moveDown(idx){ }
+
+    function moveUp(idx){
+        if(!msgList[idx].isTop) return;
+        let currOrder = msgList[idx].topOrder;
+        if(currOrder <= 1) return;
+        for(let i=0;i<msgList.length;i++){
+            if(msgList[i].isTop && msgList[i].topOrder === currOrder - 1){
+                let temp = msgList[i].topOrder;
+                msgList[i].topOrder = msgList[idx].topOrder;
+                msgList[idx].topOrder = temp;
+                saveMsg();
+                renderMsg();
+                return;
+            }
+        }
+    }
+
+    function moveDown(idx){
+        if(!msgList[idx].isTop) return;
+        let currOrder = msgList[idx].topOrder;
+        let topArr = msgList.filter(m=>m.isTop);
+        if(currOrder >= topArr.length) return;
+        for(let i=0;i<msgList.length;i++){
+            if(msgList[i].isTop && msgList[i].topOrder === currOrder + 1){
+                let temp = msgList[i].topOrder;
+                msgList[i].topOrder = msgList[idx].topOrder;
+                msgList[idx].topOrder = temp;
+                saveMsg();
+                renderMsg();
+                return;
+            }
+        }
+    }
 
     function delMsg(i){
         if(!confirm("确定删除？"))return;
@@ -604,15 +642,44 @@
     function renderMsg(){
         let b=document.getElementById("msgList");
         b.innerHTML="";
-        msgList.reverse().forEach((item,idx)=>{
-            let d=document.createElement("div");
-            d.className="msg-item";
-            d.innerHTML=`
-                <div class="msg-info">发布人：${item.user}｜时间：${item.time}</div>
-                <div class="msg-content">${item.content}</div>
-            `;
-            b.appendChild(d);
+        let topMsgs = msgList.filter(m=>m.isTop).sort((a,b)=>a.topOrder - b.topOrder);
+        let normalMsgs = msgList.filter(m=>!m.isTop).reverse();
+
+        topMsgs.forEach((item)=>{
+            let idx = msgList.findIndex(m=>m.user===item.user && m.time===item.time && m.content===item.content);
+            renderOneMsg(idx,true);
         });
+        normalMsgs.forEach((item)=>{
+            let idx = msgList.findIndex(m=>m.user===item.user && m.time===item.time && m.content===item.content);
+            renderOneMsg(idx,false);
+        });
+    }
+
+    function renderOneMsg(idx,isTop){
+        let i2 = msgList[idx];
+        let d=document.createElement("div");
+        d.className="msg-item" + (isTop ? " msg-top" : "");
+
+        let btnHtml = "";
+        if(isAdmin){
+            btnHtml += `<button class="top-btn" onclick="toggleTop(${idx})">${isTop?'取消置顶':'置顶'}</button>`;
+            if(isTop){
+                btnHtml += `<button class="move-btn" onclick="moveUp(${idx})">上移</button>`;
+                btnHtml += `<button class="move-btn" onclick="moveDown(${idx})">下移</button>`;
+            }
+            btnHtml += `<button class="del-msg-btn" onclick="delMsg(${idx})">删除</button>`;
+        }else{
+            if(i2.user === nowLoginUser){
+                btnHtml += `<button class="del-msg-btn" onclick="delMsg(${idx})">删除</button>`;
+            }
+        }
+
+        d.innerHTML=`
+            <div class="msg-info">${isTop?'📌 置顶｜':''}发布人：${i2.user}｜时间：${i2.time}</div>
+            <div class="msg-content">${i2.content}</div>
+            ${btnHtml}
+        `;
+        document.getElementById("msgList").appendChild(d);
     }
 </script>
 </body>
